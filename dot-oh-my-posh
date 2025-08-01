@@ -1,6 +1,6 @@
 ## -------- OH-MY-POSH --------
 
-DEFAULT_OMP_THEME=nu4a
+DEFAULT_OMP_THEME=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
 OMP_THEMES=$(brew --prefix oh-my-posh)/themes
 
 alias omp_ls="ls $OMP_THEMES"
