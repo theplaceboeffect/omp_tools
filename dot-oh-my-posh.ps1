@@ -214,6 +214,33 @@ function _omp_completion {
 Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 
+function omp_install {
+    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $homeDir = $env:USERPROFILE
+    if (-not $homeDir) {
+        $homeDir = $env:HOME
+    }
+    
+    Write-Host "Installing Oh My Posh tools for PowerShell..." -ForegroundColor Green
+    
+    # Copy the PowerShell script to home directory
+    $targetFile = Join-Path $homeDir ".oh-my-posh-tools.ps1"
+    try {
+        Copy-Item "$scriptDir\dot-oh-my-posh.ps1" $targetFile -Force
+        Write-Host "✓ PowerShell script installed to $targetFile" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "To use the tools, add this line to your PowerShell profile:" -ForegroundColor Yellow
+        Write-Host ". ~/.oh-my-posh-tools.ps1" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Or run this command to add it automatically:" -ForegroundColor Yellow
+        Write-Host "Add-Content `$PROFILE '. ~/.oh-my-posh-tools.ps1'" -ForegroundColor Cyan
+    }
+    catch {
+        Write-Host "✗ Failed to install PowerShell script" -ForegroundColor Red
+        return 1
+    }
+}
+
 # Initialize oh-my-posh with default theme
 $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
 Invoke-Expression $initCmd 

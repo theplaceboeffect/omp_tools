@@ -26,13 +26,29 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
 #### `omp_ls`
 - Lists all available Oh My Posh themes
 
+#### `omp_init`
+- Sets the Oh My Posh theme to the default theme
+- Reads the default theme from `~/.config/omp_tools/default`
+- Falls back to "nu4a" if no default is configured
+
 ## Installation
 
 1. Clone this repository
-2. Source the configuration file in your shell:
-   ```bash
-   source dot-oh-my-posh.zsh
-   ```
+2. Run the installation command for your shell:
+
+### For Zsh Users
+```bash
+source dot-oh-my-posh.zsh
+omp_install
+```
+
+### For PowerShell Users
+```powershell
+. dot-oh-my-posh.ps1
+omp_install
+```
+
+The installation script will automatically detect your shell and provide the appropriate setup instructions.
 
 ## Usage Examples
 
@@ -51,6 +67,9 @@ omp_show nu4a
 
 # List all available themes
 omp_ls
+
+# Initialize with default theme
+omp_init
 ```
 
 ## Configuration
@@ -60,7 +79,7 @@ The default theme is stored in `~/.config/omp_tools/default` and defaults to "nu
 ## Requirements
 
 - Oh My Posh installed via Homebrew
-- Zsh shell
+- Zsh shell (for zsh users) or PowerShell (for PowerShell users)
 - GitHub CLI (for repository management)
 
 ## License

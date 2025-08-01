@@ -158,6 +158,13 @@ function omp_show() {
     done
 }
 
+function omp_init() {
+    local default_theme
+    default_theme=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
+    
+    omp_set "$default_theme"
+}
+
 autoload -Uz compinit
 compinit
 _omp_set_completion() {
@@ -168,3 +175,32 @@ _omp_set_completion() {
 
 compdef _omp_set_completion omp_set
 compdef _omp_set_completion omp_show
+compdef _omp_set_completion omp_init
+
+function omp_install() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+    local home_dir="$HOME"
+    
+    echo "Installing Oh My Posh tools for Zsh..."
+    
+    # Copy the zsh script to home directory
+    local target_file="$home_dir/.oh-my-posh-tools.zsh"
+    cp "$script_dir/dot-oh-my-posh.zsh" "$target_file"
+    
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Zsh script installed to $target_file"
+        echo ""
+        echo "To use the tools, add this line to your ~/.zshrc:"
+        echo "source ~/.oh-my-posh-tools.zsh"
+        echo ""
+        echo "Or run this command to add it automatically:"
+        echo "echo 'source ~/.oh-my-posh-tools.zsh' >> ~/.zshrc"
+        echo ""
+        echo "Initializing Oh My Posh with default theme..."
+        omp_init
+    else
+        echo "✗ Failed to install zsh script"
+        return 1
+    fi
+}
