@@ -1,0 +1,47 @@
+## -------- OH-MY-POSH --------
+
+DEFAULT_OMP_THEME=nu4a
+OMP_THEMES=$(brew --prefix oh-my-posh)/themes
+
+alias omp_ls="ls $OMP_THEMES"
+
+function omp_set() {
+	echo Setting theme to $1
+	eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$1.omp.json")"
+}
+
+function omp_show() {
+  for theme_file in "$OMP_THEMES"/*.omp.json; do
+    echo
+    local theme_name
+    theme_name=$(basename "$theme_file" .omp.json)
+    local header_text=" Previewing theme: $theme_name          "
+    
+    print "\e[48;2;0;0;255m\e[1;97m Previewing theme: \e[1;93m$theme_name\e[1;97m          \e[0m"
+    
+    print -P "$(oh-my-posh print primary --config "$theme_file")"
+
+    local continue_text=" Press ⏎ to continue... "
+    local padding_len=$(( ${#header_text} - ${#continue_text} ))
+    local padding
+    padding=$(printf '%*s' "$padding_len" '')
+
+    print -n "\e[48;2;0;0;255m\e[1;97m$continue_text$padding\e[0m"
+    read
+  done
+}
+
+#--
+
+eval "$(oh-my-posh init zsh --config $OMP_THEMES/$DEFAULT_OMP_THEME.omp.json)"
+
+autoload -Uz compinit
+compinit
+_omp_set_completion() {
+	local -a themes
+	themes=(${(f)"$(find "$OMP_THEMES" -name '*.omp.json' -exec basename {} .omp.json \;)"})
+	compadd -a themes
+}
+
+compdef _omp_set_completion omp_set
+
