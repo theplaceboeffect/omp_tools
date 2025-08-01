@@ -66,44 +66,15 @@ function omp_show() {
             'j') # Down
                 current_index=$(( (current_index + 1) % num_themes ))
                 ;;
-            
-
-#--
-
-eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
-
-autoload -Uz compinit
-compinit
-_omp_set_completion() {
-	local -a themes
-	themes=(${(f)"$(find "$OMP_THEMES" -name '*.omp.json' -exec basename {} .omp.json \;)"})
-	compadd -a themes
-}
-
-compdef _omp_set_completion omp_set
-\r'|
-
-#--
-
-eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
-
-autoload -Uz compinit
-compinit
-_omp_set_completion() {
-	local -a themes
-	themes=(${(f)"$(find "$OMP_THEMES" -name '*.omp.json' -exec basename {} .omp.json \;)"})
-	compadd -a themes
-}
-
-compdef _omp_set_completion omp_set
-\n') # Enter
+            '') # Enter
                 tput clear
                 local selected_theme
                 selected_theme=$(basename "${themes[$current_index]}" .omp.json)
                 omp_set "$selected_theme"
                 echo "Theme set to $selected_theme"
                 break
-                ;;n            'q') # Quit
+                ;;
+            'q') # Quit
                 tput clear
                 # Restore the original theme from the stored config
                 eval "$(oh-my-posh init zsh --config - <<<"$original_config")"
@@ -114,8 +85,7 @@ compdef _omp_set_completion omp_set
     done
 }
 
-#--
-
+# Initialize oh-my-posh with default theme
 eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
 
 autoload -Uz compinit
