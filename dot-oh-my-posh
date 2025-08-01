@@ -40,7 +40,7 @@ function omp_show() {
         local theme_file=${themes[$current_index]}
         local theme_name
         theme_name=$(basename "$theme_file" .omp.json)
-        local header_text=" Previewing theme: $theme_name (${current_index+1}/$num_themes) "
+        local header_text=" Previewing theme: $theme_name "
 
         # Print the header
         print "\e[48;2;0;0;255m\e[1;97m$header_text\e[0m"
