@@ -49,7 +49,7 @@ function omp_show() {
         print -P "$(oh-my-posh print primary --config "$theme_file")"
         
         # Print the instructions
-        print -n "\e[48;2;0;0;255m\e[1;97m Use j/k to cycle, \u23ce to set, q to quit \e[0m"
+        print -n "\e[48;2;0;0;255m\e[1;97m Use j/k to cycle, \u23ce to set, s to set default, q to quit \e[0m"
     }
 
     # Main loop to handle keypresses
@@ -72,6 +72,16 @@ function omp_show() {
                 selected_theme=$(basename "${themes[$current_index]}" .omp.json)
                 omp_set "$selected_theme"
                 echo "Theme set to $selected_theme"
+                break
+                ;;
+            's') # Set as default
+                tput clear
+                local selected_theme
+                selected_theme=$(basename "${themes[$current_index]}" .omp.json)
+                mkdir -p ~/.config/omp_tools
+                echo "$selected_theme" > ~/.config/omp_tools/default
+                omp_set "$selected_theme"
+                echo "Theme set to $selected_theme and saved as default"
                 break
                 ;;
             'q') # Quit
