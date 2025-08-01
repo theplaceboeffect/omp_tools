@@ -124,3 +124,4 @@ _omp_set_completion() {
 }
 
 compdef _omp_set_completion omp_set
+compdef _omp_set_completion omp_show
