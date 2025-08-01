@@ -121,6 +121,13 @@ function omp_show() {
                 selected_theme=$(basename "${themes[$current_index]}" .omp.json)
                 omp_set "$selected_theme"
                 echo "Theme set to $selected_theme"
+                
+                # Check if theme differs from default
+                local default_theme
+                default_theme=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
+                if [[ "$selected_theme" != "$default_theme" ]]; then
+                    echo "Note: Current theme ($selected_theme) differs from default theme ($default_theme)"
+                fi
                 break
                 ;;
             's') # Set as default
@@ -138,6 +145,13 @@ function omp_show() {
                 # Restore the original theme
                 omp_set "$original_theme_name"
                 echo "Theme selection cancelled."
+                
+                # Check if restored theme differs from default
+                local default_theme
+                default_theme=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
+                if [[ "$original_theme_name" != "$default_theme" ]]; then
+                    echo "Note: Current theme ($original_theme_name) differs from default theme ($default_theme)"
+                fi
                 break
                 ;;
         esac
