@@ -16,7 +16,7 @@ function omp_show() {
     # Get a list of all theme files
     local themes=("$OMP_THEMES"/*.omp.json)
     local num_themes=${#themes[@]}
-    local current_index=0
+    local current_index=1
 
     # Get the current theme name from the POSH_THEME env var
     local current_theme_name
@@ -45,6 +45,8 @@ function omp_show() {
     # Store original theme to restore on quit
     local original_config
     original_config=$(oh-my-posh export config)
+    local original_theme_name
+    original_theme_name=$(basename "$POSH_THEME" .omp.json)
 
     # Function to display the current theme
     display_theme() {
@@ -90,15 +92,15 @@ function omp_show() {
 
         case "$key" in
             'k') # Up
-                current_index=$(( (current_index - 1 + num_themes) % num_themes ))
-                if [[ $current_index -eq 0 ]]; then
+                current_index=$((current_index - 1))
+                if [[ $current_index -lt 1 ]]; then
                     current_index=$num_themes
                 fi
                 ;;
             'j') # Down
-                current_index=$(( (current_index + 1) % num_themes ))
-                if [[ $current_index -eq 0 ]]; then
-                    current_index=$num_themes
+                current_index=$((current_index + 1))
+                if [[ $current_index -gt $num_themes ]]; then
+                    current_index=1
                 fi
                 ;;
             $'\n') # Enter
@@ -121,17 +123,14 @@ function omp_show() {
                 ;;
             'q') # Quit
                 tput clear
-                # Restore the original theme from the stored config
-                eval "$(oh-my-posh init zsh --config - <<<"$original_config")"
+                # Restore the original theme
+                omp_set "$original_theme_name"
                 echo "Theme selection cancelled."
                 break
                 ;;
         esac
     done
 }
-
-# Initialize oh-my-posh with default theme
-eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
 
 autoload -Uz compinit
 compinit
