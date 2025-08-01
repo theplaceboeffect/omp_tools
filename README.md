@@ -1,4 +1,4 @@
-# Gemini CLI
+# Oh My Posh Tools
 
 A command-line interface project with enhanced Oh My Posh configuration and theme management tools.
 
