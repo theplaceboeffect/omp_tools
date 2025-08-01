@@ -22,13 +22,25 @@ function omp_show() {
     local current_theme_name
     current_theme_name=$(basename "$POSH_THEME" .omp.json)
 
-    # Find the index of the current theme
-    for i in {1..$num_themes}; do
-        if [[ "$(basename "${themes[$i]}" .omp.json)" == "$current_theme_name" ]]; then
-            current_index=$((i - 1))
-            break
-        fi
-    done
+    # If a theme is specified as argument, start with that theme
+    if [[ -n "$1" ]]; then
+        local specified_theme="$1"
+        # Find the index of the specified theme
+        for i in {1..$num_themes}; do
+            if [[ "$(basename "${themes[$i]}" .omp.json)" == "$specified_theme" ]]; then
+                current_index=$i
+                break
+            fi
+        done
+    else
+        # Find the index of the current theme
+        for i in {1..$num_themes}; do
+            if [[ "$(basename "${themes[$i]}" .omp.json)" == "$current_theme_name" ]]; then
+                current_index=$i
+                break
+            fi
+        done
+    fi
 
     # Store original theme to restore on quit
     local original_config
@@ -79,9 +91,15 @@ function omp_show() {
         case "$key" in
             'k') # Up
                 current_index=$(( (current_index - 1 + num_themes) % num_themes ))
+                if [[ $current_index -eq 0 ]]; then
+                    current_index=$num_themes
+                fi
                 ;;
             'j') # Down
                 current_index=$(( (current_index + 1) % num_themes ))
+                if [[ $current_index -eq 0 ]]; then
+                    current_index=$num_themes
+                fi
                 ;;
             $'\n') # Enter
                 tput clear
