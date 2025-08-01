@@ -40,7 +40,24 @@ function omp_show() {
         local theme_file=${themes[$current_index]}
         local theme_name
         theme_name=$(basename "$theme_file" .omp.json)
-        local header_text=" Previewing theme: $theme_name "
+        
+        # Check if this is the default theme
+        local default_theme
+        default_theme=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
+        
+        # Check if this is the currently active theme
+        local is_current=""
+        local is_default=""
+        
+        if [[ "$theme_name" == "$current_theme_name" ]]; then
+            is_current=" (CURRENT)"
+        fi
+        
+        if [[ "$theme_name" == "$default_theme" ]]; then
+            is_default=" (DEFAULT)"
+        fi
+        
+        local header_text=" Previewing theme: $theme_name$is_current$is_default "
 
         # Print the header
         print "\e[48;2;0;0;255m\e[1;97m$header_text\e[0m"
