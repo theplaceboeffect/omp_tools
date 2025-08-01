@@ -6,34 +6,71 @@ OMP_THEMES=$(brew --prefix oh-my-posh)/themes
 alias omp_ls="ls $OMP_THEMES"
 
 function omp_set() {
-	echo Setting theme to $1
-	eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$1.omp.json")"
+    echo "Setting theme to $1"
+    local theme_cmd
+    theme_cmd="$(oh-my-posh init zsh --config "$OMP_THEMES/$1.omp.json")"
+    eval "$theme_cmd"
 }
 
 function omp_show() {
-  for theme_file in "$OMP_THEMES"/*.omp.json; do
-    echo
-    local theme_name
-    theme_name=$(basename "$theme_file" .omp.json)
-    local header_text=" Previewing theme: $theme_name          "
-    
-    print "\e[48;2;0;0;255m\e[1;97m Previewing theme: \e[1;93m$theme_name\e[1;97m          \e[0m"
-    
-    print -P "$(oh-my-posh print primary --config "$theme_file")"
+    # Get a list of all theme files
+    local themes=("$OMP_THEMES"/*.omp.json)
+    local num_themes=${#themes[@]}
+    local current_index=0
 
-    local continue_text=" Press ⏎ to continue... "
-    local padding_len=$(( ${#header_text} - ${#continue_text} ))
-    local padding
-    padding=$(printf '%*s' "$padding_len" '')
+    # Get the current theme name from the POSH_THEME env var
+    local current_theme_name
+    current_theme_name=$(basename "$POSH_THEME" .omp.json)
 
-    print -n "\e[48;2;0;0;255m\e[1;97m$continue_text$padding\e[0m"
-    read
-  done
-}
+    # Find the index of the current theme
+    for i in {1..$num_themes}; do
+        if [[ "$(basename "${themes[$i]}" .omp.json)" == "$current_theme_name" ]]; then
+            current_index=$((i - 1))
+            break
+        fi
+    done
+
+    # Store original theme to restore on quit
+    local original_config
+    original_config=$(oh-my-posh export config)
+
+    # Function to display the current theme
+    display_theme() {
+        tput clear
+        local theme_file=${themes[$current_index]}
+        local theme_name
+        theme_name=$(basename "$theme_file" .omp.json)
+        local header_text=" Previewing theme: $theme_name (${current_index+1}/$num_themes) "
+
+        # Print the header
+        print "\e[48;2;0;0;255m\e[1;97m$header_text\e[0m"
+        
+        # Print the rendered prompt
+        print -P "$(oh-my-posh print primary --config "$theme_file")"
+        
+        # Print the instructions
+        print -n "\e[48;2;0;0;255m\e[1;97m Use j/k to cycle, \u23ce to set, q to quit \e[0m"
+    }
+
+    # Main loop to handle keypresses
+    while true; do
+        display_theme
+        
+        # Read a single keypress
+        read -s -r -k 1 key
+
+        case "$key" in
+            'k') # Up
+                current_index=$(( (current_index - 1 + num_themes) % num_themes ))
+                ;;
+            'j') # Down
+                current_index=$(( (current_index + 1) % num_themes ))
+                ;;
+            
 
 #--
 
-eval "$(oh-my-posh init zsh --config $OMP_THEMES/$DEFAULT_OMP_THEME.omp.json)"
+eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
 
 autoload -Uz compinit
 compinit
@@ -44,4 +81,49 @@ _omp_set_completion() {
 }
 
 compdef _omp_set_completion omp_set
+\r'|
 
+#--
+
+eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
+
+autoload -Uz compinit
+compinit
+_omp_set_completion() {
+	local -a themes
+	themes=(${(f)"$(find "$OMP_THEMES" -name '*.omp.json' -exec basename {} .omp.json \;)"})
+	compadd -a themes
+}
+
+compdef _omp_set_completion omp_set
+\n') # Enter
+                tput clear
+                local selected_theme
+                selected_theme=$(basename "${themes[$current_index]}" .omp.json)
+                omp_set "$selected_theme"
+                echo "Theme set to $selected_theme"
+                break
+                ;;n            'q') # Quit
+                tput clear
+                # Restore the original theme from the stored config
+                eval "$(oh-my-posh init zsh --config - <<<"$original_config")"
+                echo "Theme selection cancelled."
+                break
+                ;;
+        esac
+    done
+}
+
+#--
+
+eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
+
+autoload -Uz compinit
+compinit
+_omp_set_completion() {
+	local -a themes
+	themes=(${(f)"$(find "$OMP_THEMES" -name '*.omp.json' -exec basename {} .omp.json \;)"})
+	compadd -a themes
+}
+
+compdef _omp_set_completion omp_set
