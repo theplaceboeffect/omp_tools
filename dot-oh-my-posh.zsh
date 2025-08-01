@@ -6,6 +6,18 @@ OMP_THEMES=$(brew --prefix oh-my-posh)/themes
 alias omp_ls="ls $OMP_THEMES"
 
 function omp_set() {
+    if [[ -z "$1" ]]; then
+        # Display current and default themes when no parameter is provided
+        local current_theme_name
+        current_theme_name=$(basename "$POSH_THEME" .omp.json)
+        local default_theme
+        default_theme=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
+        
+        echo "Current theme: $current_theme_name"
+        echo "Default theme: $default_theme"
+        return
+    fi
+    
     echo "Setting theme to $1"
     local theme_cmd
     theme_cmd="$(oh-my-posh init zsh --config "$OMP_THEMES/$1.omp.json")"
