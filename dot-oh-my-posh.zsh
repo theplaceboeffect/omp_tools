@@ -1,5 +1,84 @@
 ## -------- OH-MY-POSH --------
 
+# Environment Detection for Windows Compatibility
+get_omp_environment() {
+    # Determine Operating System
+    local os=""
+    case "$(uname -s)" in
+        Darwin*)    os="macOS" ;;
+        Linux*)     os="Linux" ;;
+        CYGWIN*|MINGW*|MSYS*) os="Windows" ;;
+        *)          os="Unknown" ;;
+    esac
+    
+    # Determine Shell
+    local shell="zsh"
+    
+    # Determine oh-my-posh installation directory
+    local omp_path=""
+    
+    # Check common installation paths
+    if [[ -d "$(brew --prefix oh-my-posh 2>/dev/null)" ]]; then
+        omp_path="$(brew --prefix oh-my-posh)"
+    elif [[ -d "$HOME/.oh-my-posh" ]]; then
+        omp_path="$HOME/.oh-my-posh"
+    elif [[ -d "$LOCALAPPDATA/oh-my-posh" ]]; then
+        omp_path="$LOCALAPPDATA/oh-my-posh"
+    elif [[ -d "/usr/local/share/oh-my-posh" ]]; then
+        omp_path="/usr/local/share/oh-my-posh"
+    elif [[ -d "/opt/oh-my-posh" ]]; then
+        omp_path="/opt/oh-my-posh"
+    else
+        # Try to find oh-my-posh executable
+        local omp_exe
+        omp_exe=$(command -v oh-my-posh 2>/dev/null)
+        if [[ -n "$omp_exe" ]]; then
+            omp_path=$(dirname "$omp_exe")
+        fi
+    fi
+    
+    # Determine Package Manager
+    local package_manager="Unknown"
+    
+    # Test each package manager individually
+    if command -v brew >/dev/null 2>&1; then
+        package_manager="Homebrew"
+    fi
+    
+    if [[ "$package_manager" == "Unknown" ]] && command -v winget >/dev/null 2>&1; then
+        package_manager="winget"
+    fi
+    
+    if [[ "$package_manager" == "Unknown" ]] && command -v choco >/dev/null 2>&1; then
+        package_manager="Chocolatey"
+    fi
+    
+    if [[ "$package_manager" == "Unknown" ]] && command -v scoop >/dev/null 2>&1; then
+        package_manager="Scoop"
+    fi
+    
+    if [[ "$package_manager" == "Unknown" ]] && command -v apt >/dev/null 2>&1; then
+        package_manager="apt"
+    fi
+    
+    if [[ "$package_manager" == "Unknown" ]] && command -v yum >/dev/null 2>&1; then
+        package_manager="yum"
+    fi
+    
+    # Create environment info string
+    local env_info="OS:$os|Shell:$shell|OMPDir:$omp_path|PackageManager:$package_manager"
+    echo "$env_info"
+}
+
+# Get and display environment information
+OMP_ENVIRONMENT=$(get_omp_environment)
+echo "=== OH-MY-POSH ENVIRONMENT ==="
+echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
+echo "Shell: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f2 | cut -d':' -f2)"
+echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"
+echo "Package Manager: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f4 | cut -d':' -f2)"
+echo "==============================="
+
 DEFAULT_OMP_THEME=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
 OMP_THEMES=$(brew --prefix oh-my-posh)/themes
 

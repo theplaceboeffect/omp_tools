@@ -1,5 +1,88 @@
 ## -------- OH-MY-POSH --------
 
+# Environment Detection for Windows Compatibility
+function Get-OMPEnvironment {
+    $envInfo = @{
+        OperatingSystem = $null
+        Shell = $null
+        OMPInstallDir = $null
+        PackageManager = $null
+    }
+    
+    # Determine Operating System
+    if ($IsWindows -or $env:OS -eq "Windows_NT") {
+        $envInfo.OperatingSystem = "Windows"
+    } elseif ($IsMacOS) {
+        $envInfo.OperatingSystem = "macOS"
+    } elseif ($IsLinux) {
+        $envInfo.OperatingSystem = "Linux"
+    } else {
+        $envInfo.OperatingSystem = "Unknown"
+    }
+    
+    # Determine Shell
+    $envInfo.Shell = $PSVersionTable.PSEdition
+    
+    # Determine oh-my-posh installation directory
+    $ompPath = $null
+    
+    # Check common installation paths
+    $possiblePaths = @(
+        "$(brew --prefix oh-my-posh 2>$null)",
+        "$env:USERPROFILE\.oh-my-posh",
+        "$env:LOCALAPPDATA\oh-my-posh",
+        "/usr/local/share/oh-my-posh",
+        "/opt/oh-my-posh"
+    )
+    
+    foreach ($path in $possiblePaths) {
+        if (Test-Path $path) {
+            $ompPath = $path
+            break
+        }
+    }
+    
+    if (-not $ompPath) {
+        # Try to find oh-my-posh executable
+        $ompExe = Get-Command oh-my-posh -ErrorAction SilentlyContinue
+        if ($ompExe) {
+            $ompPath = Split-Path $ompExe.Source
+        }
+    }
+    
+    $envInfo.OMPInstallDir = $ompPath
+    
+    # Determine Package Manager
+    $packageManager = "Unknown"
+    
+    if (Get-Command brew -ErrorAction SilentlyContinue) {
+        $packageManager = "Homebrew"
+    } elseif (Get-Command winget -ErrorAction SilentlyContinue) {
+        $packageManager = "winget"
+    } elseif (Get-Command choco -ErrorAction SilentlyContinue) {
+        $packageManager = "Chocolatey"
+    } elseif (Get-Command scoop -ErrorAction SilentlyContinue) {
+        $packageManager = "Scoop"
+    } elseif (Get-Command apt -ErrorAction SilentlyContinue) {
+        $packageManager = "apt"
+    } elseif (Get-Command yum -ErrorAction SilentlyContinue) {
+        $packageManager = "yum"
+    }
+    
+    $envInfo.PackageManager = $packageManager
+    
+    return $envInfo
+}
+
+# Get and display environment information
+$OMP_ENVIRONMENT = Get-OMPEnvironment
+Write-Host "=== OH-MY-POSH ENVIRONMENT ===" -ForegroundColor Cyan
+Write-Host "Operating System: $($OMP_ENVIRONMENT.OperatingSystem)" -ForegroundColor Yellow
+Write-Host "Shell: $($OMP_ENVIRONMENT.Shell)" -ForegroundColor Yellow
+Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
+Write-Host "Package Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
+Write-Host "===============================" -ForegroundColor Cyan
+
 $DEFAULT_OMP_THEME = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
 if (-not $DEFAULT_OMP_THEME) {
     $DEFAULT_OMP_THEME = "nu4a"
