@@ -1,8 +1,0 @@
-{
-  "DefaultTheme": "nu4a",
-  "MockOhMyPosh": true,
-  "TestHomePrefix": "HOME-test",
-  "BranchName": "v01.06.00",
-  "ScriptsPath": "/Users/mwt/projects/oh-my-posh-tools/bin",
-  "TestRoot": "/Users/mwt/projects/oh-my-posh-tools/tests/tests/v01.06.00"
-}
