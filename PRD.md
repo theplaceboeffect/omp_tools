@@ -94,14 +94,30 @@ Oh My Posh Tools is a command-line interface project that provides enhanced Oh M
 
 ### 4. Cross-Platform Support
 
-#### 4.1 Zsh Support (`dot-oh-my-posh.zsh`)
+#### 4.1 Windows Compatibility
+**Requirements:**
+- **Environment Detection:** Automatically detect operating system, shell, and package manager
+- **Installation Path Detection:** Support multiple oh-my-posh installation locations
+- **Package Manager Support:** Detect and support various package managers (Homebrew, winget, Chocolatey, Scoop, apt, yum)
+- **Cross-Platform Paths:** Handle different installation paths for Windows, macOS, and Linux
+- **Environment Information:** Display comprehensive environment information to users
+
+**Implementation Details:**
+- Detect operating system using platform-specific methods
+- Identify shell type and version
+- Search for oh-my-posh installation in common locations
+- Detect available package managers
+- Store environment information in `OMP_ENVIRONMENT` variable
+- Display formatted environment information to users
+
+#### 4.2 Zsh Support (`dot-oh-my-posh.zsh`)
 **Requirements:**
 - Full functionality in zsh environment
 - zsh-specific syntax and commands
 - Proper shell initialization
 - zsh completion system integration
 
-#### 4.2 PowerShell Support (`dot-oh-my-posh.ps1`)
+#### 4.3 PowerShell Support (`dot-oh-my-posh.ps1`)
 **Requirements:**
 - Full functionality in PowerShell environment
 - PowerShell-specific syntax and commands

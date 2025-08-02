@@ -4,6 +4,16 @@ A command-line interface project with enhanced Oh My Posh configuration and them
 
 ## Features
 
+### Windows Compatibility
+
+This project includes comprehensive Windows compatibility features:
+
+- **Environment Detection**: Automatically detects operating system, shell, and package manager
+- **Cross-Platform Support**: Works on Windows, macOS, and Linux
+- **Package Manager Detection**: Supports Homebrew, winget, Chocolatey, Scoop, apt, and yum
+- **Installation Path Detection**: Automatically finds oh-my-posh installation in common locations
+- **Environment Information**: Displays comprehensive environment information to users
+
 ### Oh My Posh Theme Management
 
 This project includes a comprehensive set of functions for managing Oh My Posh themes:
@@ -29,9 +39,16 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
 ## Installation
 
 1. Clone this repository
-2. Source the configuration file in your shell:
+2. Source the appropriate configuration file in your shell:
+
+   **For Zsh:**
    ```bash
    source dot-oh-my-posh.zsh
+   ```
+
+   **For PowerShell:**
+   ```powershell
+   . dot-oh-my-posh.ps1
    ```
 
 ## Usage Examples
@@ -59,8 +76,8 @@ The default theme is stored in `~/.config/omp_tools/default` and defaults to "nu
 
 ## Requirements
 
-- Oh My Posh installed via Homebrew
-- Zsh shell
+- Oh My Posh installed (via Homebrew, winget, Chocolatey, Scoop, apt, or yum)
+- Zsh shell (for zsh version) or PowerShell (for PowerShell version)
 - GitHub CLI (for repository management)
 
 ## License

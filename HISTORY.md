@@ -218,6 +218,28 @@ This document reconstructs the complete development history of the Oh My Posh To
 - Comprehensive documentation
 - Enhanced user experience with helpful exit messages
 
+## Commit v01.07.00 - Windows Compatibility
+
+**Date:** Current
+
+**Files:** `dot-oh-my-posh.zsh`, `dot-oh-my-posh.ps1`, `bin/derived-omp_tools.ps1`, `bin/derived-omp_toosl.zsh`, `bin/prd-omp_tools.ps1`, `bin/prd-omp_tools.zsh`
+
+**Changes:**
+- Added comprehensive Windows compatibility features
+- Implemented environment detection for operating system, shell, and package manager
+- Added support for multiple oh-my-posh installation paths
+- Enhanced package manager detection (Homebrew, winget, Chocolatey, Scoop, apt, yum)
+- Added `OMP_ENVIRONMENT` variable to store environment information
+- Updated all derived scripts in bin/ directory with Windows compatibility
+- Enhanced cross-platform path handling for Windows, macOS, and Linux
+
+**New Features:**
+- Automatic environment detection and display
+- Support for Windows installation paths
+- Enhanced package manager detection
+- Comprehensive environment information display
+- Cross-platform installation path detection
+
 ## Summary of Evolution
 
 The tool evolved from a basic theme switcher to a comprehensive Oh My Posh management system:
