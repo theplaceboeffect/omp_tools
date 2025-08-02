@@ -1,0 +1,216 @@
+## -------- OH-MY-POSH TOOLS (GUIDELINE VERSION) --------
+
+$DEFAULT_OMP_THEME = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
+if (-not $DEFAULT_OMP_THEME) {
+    $DEFAULT_OMP_THEME = "nu4a"
+}
+
+$OMP_THEMES = "$(brew --prefix oh-my-posh)/themes"
+
+function omp_ls {
+    Get-ChildItem $OMP_THEMES -Name "*.omp.json" | ForEach-Object { $_.Replace(".omp.json", "") }
+}
+
+function omp_set {
+    param(
+        [Parameter(Position=0)]
+        [string]$Theme
+    )
+    
+    if (-not $Theme) {
+        # Display current and default themes when no parameter is provided
+        $currentThemeName = Split-Path $env:POSH_THEME -LeafBase -ErrorAction SilentlyContinue
+        $defaultTheme = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
+        if (-not $defaultTheme) {
+            $defaultTheme = "nu4a"
+        }
+        
+        Write-Host "Current theme: $currentThemeName"
+        Write-Host "Default theme: $defaultTheme"
+        return
+    }
+    
+    Write-Host "Setting theme to $Theme"
+    $themeCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$Theme.omp.json"
+    Invoke-Expression $themeCmd
+}
+
+function omp_show {
+    param(
+        [Parameter(Position=0)]
+        [string]$StartTheme
+    )
+    
+    # Get a list of all theme files
+    $themes = @(Get-ChildItem $OMP_THEMES -Name "*.omp.json" | ForEach-Object { $_.Replace(".omp.json", "") })
+    $numThemes = $themes.Count
+    $currentIndex = 0
+
+    # Get the current theme name from the POSH_THEME env var
+    $currentThemeName = Split-Path $env:POSH_THEME -LeafBase -ErrorAction SilentlyContinue
+
+    # If a theme is specified as argument, start with that theme
+    if ($StartTheme) {
+        $specifiedTheme = $StartTheme
+        # Find the index of the specified theme
+        for ($i = 0; $i -lt $numThemes; $i++) {
+            if ($themes[$i] -eq $specifiedTheme) {
+                $currentIndex = $i
+                break
+            }
+        }
+    } else {
+        # Find the index of the current theme
+        for ($i = 0; $i -lt $numThemes; $i++) {
+            if ($themes[$i] -eq $currentThemeName) {
+                $currentIndex = $i
+                break
+            }
+        }
+    }
+
+    # Store original theme to restore on quit
+    $originalConfig = oh-my-posh export config
+    $originalThemeName = Split-Path $env:POSH_THEME -LeafBase -ErrorAction SilentlyContinue
+
+    # Function to display the current theme
+    function Display-Theme {
+        Clear-Host
+        $themeFile = "$OMP_THEMES/$($themes[$currentIndex]).omp.json"
+        $themeName = $themes[$currentIndex]
+        
+        # Check if this is the default theme
+        $defaultTheme = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
+        if (-not $defaultTheme) {
+            $defaultTheme = "nu4a"
+        }
+        
+        # Check if this is the currently active theme
+        $isCurrent = ""
+        $isDefault = ""
+        
+        if ($themeName -eq $currentThemeName) {
+            $isCurrent = " (CURRENT)"
+        }
+        
+        if ($themeName -eq $defaultTheme) {
+            $isDefault = " (DEFAULT)"
+        }
+        
+        $headerText = " Previewing theme: $themeName$isCurrent$isDefault "
+
+        # Print the header
+        Write-Host $headerText -BackgroundColor Blue -ForegroundColor White
+        
+        # Print the rendered prompt
+        $promptOutput = oh-my-posh print primary --config $themeFile
+        Write-Host $promptOutput
+        
+        # Print the instructions
+        Write-Host " Use j/k to cycle, Enter to set, s to set default, q to quit " -BackgroundColor Blue -ForegroundColor White -NoNewline
+    }
+
+    # Main loop to handle keypresses
+    while ($true) {
+        Display-Theme
+        
+        # Read a single keypress
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        
+        # Check key code for special keys, character for regular keys
+        $shouldBreak = $false
+        
+        if ($key.Key -eq [ConsoleKey]::Enter -or $key.Character -eq [char]13) {
+            # Enter key
+            Clear-Host
+            $selectedTheme = $themes[$currentIndex]
+            omp_set $selectedTheme
+            Write-Host "Theme set to $selectedTheme"
+            
+            # Check if theme differs from default
+            $defaultTheme = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
+            if (-not $defaultTheme) {
+                $defaultTheme = "nu4a"
+            }
+            if ($selectedTheme -ne $defaultTheme) {
+                Write-Host "Note: Current theme ($selectedTheme) differs from default theme ($defaultTheme)" -ForegroundColor Yellow
+            }
+            $shouldBreak = $true
+        }
+        elseif ($key.Key -eq [ConsoleKey]::Escape) {
+            # Escape key
+            Clear-Host
+            # Restore the original theme
+            omp_set $originalThemeName
+            Write-Host "Theme selection cancelled."
+            $shouldBreak = $true
+        }
+        else {
+            # Regular character keys
+            switch ($key.Character) {
+                'k' { # Up
+                    $currentIndex = ($currentIndex - 1 + $numThemes) % $numThemes
+                }
+                'j' { # Down
+                    $currentIndex = ($currentIndex + 1) % $numThemes
+                }
+                's' { # Set as default
+                    Clear-Host
+                    $selectedTheme = $themes[$currentIndex]
+                    New-Item -ItemType Directory -Force -Path ~/.config/omp_tools | Out-Null
+                    $selectedTheme | Out-File ~/.config/omp_tools/default
+                    omp_set $selectedTheme
+                    Write-Host "Theme set to $selectedTheme and saved as default"
+                    $shouldBreak = $true
+                }
+                'q' { # Quit
+                    Clear-Host
+                    # Restore the original theme
+                    omp_set $originalThemeName
+                    Write-Host "Theme selection cancelled."
+                    
+                    # Check if restored theme differs from default
+                    $defaultTheme = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
+                    if (-not $defaultTheme) {
+                        $defaultTheme = "nu4a"
+                    }
+                    if ($originalThemeName -ne $defaultTheme) {
+                        Write-Host "Note: Current theme ($originalThemeName) differs from default theme ($defaultTheme)" -ForegroundColor Yellow
+                    }
+                    $shouldBreak = $true
+                }
+                'Q' { # Quit (uppercase)
+                    Clear-Host
+                    # Restore the original theme
+                    omp_set $originalThemeName
+                    Write-Host "Theme selection cancelled."
+                    $shouldBreak = $true
+                }
+            }
+        }
+        
+        if ($shouldBreak) {
+            break
+        }
+    }
+}
+
+# Tab completion for omp_set and omp_show
+function _omp_completion {
+    param(
+        [string]$wordToComplete,
+        [string]$commandAst,
+        [int]$cursorPosition
+    )
+    
+    $themes = @(Get-ChildItem $OMP_THEMES -Name "*.omp.json" | ForEach-Object { $_.Replace(".omp.json", "") })
+    return $themes | Where-Object { $_ -like "*$wordToComplete*" }
+}
+
+# Register tab completion
+Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
+Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
+
+# Initialize oh-my-posh with default theme
+$initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
+Invoke-Expression $initCmd 
