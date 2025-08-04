@@ -249,3 +249,37 @@ _omp_set_completion() {
 
 compdef _omp_set_completion omp_set
 compdef _omp_set_completion omp_show
+
+function omp_help() {
+    echo "=== OH-MY-POSH TOOLS HELP ==="
+    echo "Version: v01.09.00"
+    echo ""
+    echo "Available Functions:"
+    echo ""
+    echo "  omp_ls"
+    echo "    List all available oh-my-posh themes"
+    echo ""
+    echo "  omp_set [theme]"
+    echo "    Set oh-my-posh theme. Without parameter, shows current and default themes"
+    echo ""
+    echo "  omp_show [theme]"
+    echo "    Interactive theme previewer with navigation"
+    echo ""
+    echo "  omp_install"
+    echo "    Install the script to your home directory for permanent use"
+    echo ""
+    echo "  omp_help"
+    echo "    Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  omp_ls                    # List all themes"
+    echo "  omp_set                   # Show current and default themes"
+    echo "  omp_set agnoster         # Set theme to agnoster"
+    echo "  omp_show                  # Interactive theme browser"
+    echo "  omp_install               # Install script permanently"
+    echo ""
+    echo "==============================="
+}
+
+# Display help information
+omp_help

@@ -390,6 +390,37 @@ function _omp_completion {
 Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 
+function omp_help {
+    Write-Host "=== OH-MY-POSH TOOLS HELP ===" -ForegroundColor Cyan
+    Write-Host "Version: v01.09.00" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Available Functions:" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  omp_ls" -ForegroundColor White
+    Write-Host "    List all available oh-my-posh themes" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "  omp_set [theme]" -ForegroundColor White
+    Write-Host "    Set oh-my-posh theme. Without parameter, shows current and default themes" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "  omp_show [theme]" -ForegroundColor White
+    Write-Host "    Interactive theme previewer with navigation" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "  omp_install" -ForegroundColor White
+    Write-Host "    Install the script to your home directory for permanent use" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "  omp_help" -ForegroundColor White
+    Write-Host "    Show this help message" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "Examples:" -ForegroundColor Yellow
+    Write-Host "  omp_ls                    # List all themes" -ForegroundColor Gray
+    Write-Host "  omp_set                   # Show current and default themes" -ForegroundColor Gray
+    Write-Host "  omp_set agnoster         # Set theme to agnoster" -ForegroundColor Gray
+    Write-Host "  omp_show                  # Interactive theme browser" -ForegroundColor Gray
+    Write-Host "  omp_install               # Install script permanently" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "===============================" -ForegroundColor Cyan
+}
+
 function omp_install {
     # Determine script directory - handle both direct execution and sourcing
     $scriptDir = '.'
@@ -424,4 +455,7 @@ function omp_install {
 
 # Initialize oh-my-posh with default theme
 $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
-Invoke-Expression $initCmd 
+Invoke-Expression $initCmd
+
+# Display help information
+omp_help 

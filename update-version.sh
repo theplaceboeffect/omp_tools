@@ -20,6 +20,7 @@ echo "Updating version to: $VERSION"
 if [[ -f "dot-oh-my-posh.ps1" ]]; then
     sed -i '' "s/## Version: v[0-9]\+\.[0-9]\+\.[0-9]\+/## Version: $VERSION/" dot-oh-my-posh.ps1
     sed -i '' "s/Write-Host \"Version: v[0-9]\+\.[0-9]\+\.[0-9]\+\"/Write-Host \"Version: $VERSION\"/" dot-oh-my-posh.ps1
+    sed -i '' "s/Write-Host \"Version: $VERSION\" -ForegroundColor Green/Write-Host \"Version: $VERSION\" -ForegroundColor Green/" dot-oh-my-posh.ps1
     echo "✓ Updated dot-oh-my-posh.ps1"
 else
     echo "✗ dot-oh-my-posh.ps1 not found"
