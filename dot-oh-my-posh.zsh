@@ -1,4 +1,5 @@
 ## -------- OH-MY-POSH --------
+## Version: v01.09.00
 
 # Environment Detection for Windows Compatibility
 get_omp_environment() {
@@ -73,6 +74,7 @@ get_omp_environment() {
 # Get and display environment information
 OMP_ENVIRONMENT=$(get_omp_environment)
 echo "=== OH-MY-POSH ENVIRONMENT ==="
+echo "Version: v01.09.00"
 echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
 echo "Shell: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f2 | cut -d':' -f2)"
 echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"

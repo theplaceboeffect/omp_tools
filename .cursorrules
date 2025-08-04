@@ -1,0 +1,33 @@
+# Cursor Rules for oh-my-posh-tools
+
+## Version Management
+When committing changes to dot-oh-my-posh.ps1 or dot-oh-my-posh.zsh:
+
+1. **Update version number**: The version number in both scripts should match the current git branch name
+2. **Version format**: Use the format `vXX.XX.XX` (e.g., v01.09.00)
+3. **Location**: Version should be on line 2 of both scripts, after the header comment
+4. **Format**: `## Version: vXX.XX.XX`
+5. **Display**: Version is also displayed in the environment output when scripts are run
+
+## Script Standards
+- Both PowerShell and zsh scripts should have identical version numbers
+- Version numbers should be updated before committing changes
+- Use semantic versioning (major.minor.patch)
+- Branch names should follow the version format
+
+## File Structure
+- dot-oh-my-posh.ps1: PowerShell script for Windows/macOS
+- dot-oh-my-posh.zsh: Zsh script for macOS/Linux
+- Both scripts should maintain feature parity
+- Version numbers must be synchronized between both files
+
+## Commit Guidelines
+- Always update version numbers before committing
+- Use conventional commit messages
+- Test both scripts after version updates
+- Ensure version numbers match the current branch name
+
+## Helper Scripts
+- `update-version.sh`: Automatically updates version numbers based on current git branch
+- Run `./update-version.sh` before committing to ensure version synchronization
+- The script handles both PowerShell and zsh scripts automatically 

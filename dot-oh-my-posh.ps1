@@ -1,4 +1,5 @@
 ## -------- OH-MY-POSH --------
+## Version: v01.09.00
 
 # Verify PowerShell 7 (pwsh) is being used
 if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt 7) {
@@ -138,6 +139,7 @@ function Get-OMPEnvironment {
 # Get and display environment information
 $OMP_ENVIRONMENT = Get-OMPEnvironment
 Write-Host "=== OH-MY-POSH ENVIRONMENT ===" -ForegroundColor Cyan
+Write-Host "Version: v01.09.00" -ForegroundColor Green
 Write-Host "Operating System: $($OMP_ENVIRONMENT.OperatingSystem)" -ForegroundColor Yellow
 Write-Host "Shell: $($OMP_ENVIRONMENT.Shell)" -ForegroundColor Yellow
 Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
@@ -387,6 +389,38 @@ function _omp_completion {
 # Register tab completion
 Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
+
+function omp_install {
+    # Determine script directory - handle both direct execution and sourcing
+    $scriptDir = '.'
+    if (-not $scriptDir) {
+        # If script is sourced, use current location
+        $scriptDir = Get-Location
+    }
+    
+    $homeDir = $env:USERPROFILE
+    if (-not $homeDir) {
+        $homeDir = $env:HOME
+    }
+    
+    Write-Host "Installing Oh My Posh tools..." -ForegroundColor Green
+    
+    # Copy the PowerShell script to home directory
+    $targetFile = Join-Path $homeDir ".oh-my-posh-tools.ps1"
+    try {
+        Copy-Item (Join-Path $scriptDir "dot-oh-my-posh.ps1") $targetFile -Force
+        Write-Host "✓ PowerShell script installed to $targetFile" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "To use the tools, add this line to your PowerShell profile:" -ForegroundColor Yellow
+        Write-Host ". ~/.oh-my-posh-tools.ps1" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Or run this command to add it automatically:" -ForegroundColor Yellow
+        Write-Host "Add-Content `$PROFILE '. ~/.oh-my-posh-tools.ps1'" -ForegroundColor Cyan
+    }
+    catch {
+        Write-Host "Error installing Oh My Posh tools: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
 
 # Initialize oh-my-posh with default theme
 $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
