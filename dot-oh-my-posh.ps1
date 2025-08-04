@@ -1,11 +1,20 @@
 ## -------- OH-MY-POSH --------
 
+# Verify PowerShell 7 (pwsh) is being used
+if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Error "This script requires PowerShell 7 (pwsh). Current version: $($PSVersionTable.PSVersion)"
+    Write-Error "Please run this script with PowerShell 7 or later."
+    exit 1
+}
+
 # Environment Detection for Windows Compatibility
 function Get-OMPEnvironment {
     $envInfo = @{
         OperatingSystem = $null
         Shell = $null
         OMPInstallDir = $null
+        OMPThemesDir = $null
+        OMPExecutable = $null
         PackageManager = $null
     }
     
@@ -23,34 +32,86 @@ function Get-OMPEnvironment {
     # Determine Shell
     $envInfo.Shell = $PSVersionTable.PSEdition
     
-    # Determine oh-my-posh installation directory
+    # Determine oh-my-posh installation directory and executable
     $ompPath = $null
+    $ompExe = $null
     
-    # Check common installation paths
-    $possiblePaths = @(
-        "$(brew --prefix oh-my-posh 2>$null)",
-        "$env:USERPROFILE\.oh-my-posh",
-        "$env:LOCALAPPDATA\oh-my-posh",
-        "/usr/local/share/oh-my-posh",
-        "/opt/oh-my-posh"
-    )
-    
-    foreach ($path in $possiblePaths) {
-        if (Test-Path $path) {
-            $ompPath = $path
-            break
-        }
+    # Try to find oh-my-posh executable first
+    $ompExe = Get-Command oh-my-posh -ErrorAction SilentlyContinue
+    if ($ompExe) {
+        $ompPath = Split-Path $ompExe.Source
+        $envInfo.OMPExecutable = $ompExe.Source
     }
     
+    # If executable not found, check common installation paths
     if (-not $ompPath) {
-        # Try to find oh-my-posh executable
-        $ompExe = Get-Command oh-my-posh -ErrorAction SilentlyContinue
-        if ($ompExe) {
-            $ompPath = Split-Path $ompExe.Source
+        $possiblePaths = @(
+            "$env:USERPROFILE\.oh-my-posh",
+            "$env:LOCALAPPDATA\oh-my-posh",
+            "/usr/local/share/oh-my-posh",
+            "/opt/oh-my-posh"
+        )
+        
+        # Add Homebrew path only if brew is available
+        if (Get-Command brew -ErrorAction SilentlyContinue) {
+            $brewPath = "$(brew --prefix oh-my-posh 2>$null)"
+            $possiblePaths += $brewPath
+        }
+        
+        foreach ($path in $possiblePaths) {
+            if (Test-Path $path) {
+                $ompPath = $path
+                break
+            }
         }
     }
     
     $envInfo.OMPInstallDir = $ompPath
+    
+    # Determine themes directory
+    $themesDir = $null
+    
+    # Try common themes locations first (Windows-specific paths)
+    $possibleThemesPaths = @(
+        "$env:LOCALAPPDATA\oh-my-posh\themes",
+        "$env:USERPROFILE\.oh-my-posh\themes",
+        "$env:LOCALAPPDATA\Programs\oh-my-posh\themes",
+        "$env:PROGRAMFILES\oh-my-posh\themes",
+        "$env:PROGRAMFILES(X86)\oh-my-posh\themes",
+        "/usr/local/share/oh-my-posh/themes",
+        "/opt/oh-my-posh/themes"
+    )
+    
+    # Add Homebrew path only if brew is available
+    if (Get-Command brew -ErrorAction SilentlyContinue) {
+        $brewPath = "$(brew --prefix oh-my-posh)/themes"
+        $possibleThemesPaths += $brewPath
+    }
+    
+    foreach ($path in $possibleThemesPaths) {
+        if (Test-Path $path) {
+            $themesDir = $path
+            break
+        }
+    }
+    
+    # If themes directory not found in common locations, try relative to installation directory
+    if (-not $themesDir -and $ompPath) {
+        # Check for themes subdirectory
+        $themesSubDir = Join-Path $ompPath "themes"
+        if (Test-Path $themesSubDir) {
+            $themesDir = $themesSubDir
+        } else {
+            # Try parent directory themes
+            $parentDir = Split-Path $ompPath -Parent
+            $parentThemesDir = Join-Path $parentDir "themes"
+            if (Test-Path $parentThemesDir) {
+                $themesDir = $parentThemesDir
+            }
+        }
+    }
+    
+    $envInfo.OMPThemesDir = $themesDir
     
     # Determine Package Manager
     $packageManager = "Unknown"
@@ -80,6 +141,8 @@ Write-Host "=== OH-MY-POSH ENVIRONMENT ===" -ForegroundColor Cyan
 Write-Host "Operating System: $($OMP_ENVIRONMENT.OperatingSystem)" -ForegroundColor Yellow
 Write-Host "Shell: $($OMP_ENVIRONMENT.Shell)" -ForegroundColor Yellow
 Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
+Write-Host "oh-my-posh Themes Dir: $($OMP_ENVIRONMENT.OMPThemesDir)" -ForegroundColor Yellow
+Write-Host "oh-my-posh Executable: $($OMP_ENVIRONMENT.OMPExecutable)" -ForegroundColor Yellow
 Write-Host "Package Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
 Write-Host "===============================" -ForegroundColor Cyan
 
@@ -88,7 +151,35 @@ if (-not $DEFAULT_OMP_THEME) {
     $DEFAULT_OMP_THEME = "nu4a"
 }
 
-$OMP_THEMES = "$(brew --prefix oh-my-posh)/themes"
+# Use the detected themes directory from environment detection
+$OMP_THEMES = $OMP_ENVIRONMENT.OMPThemesDir
+
+# If themes directory not detected, try fallback paths
+if (-not $OMP_THEMES) {
+    # Fallback paths for different systems
+    $possibleThemePaths = @(
+        "$env:LOCALAPPDATA\oh-my-posh\themes",
+        "$env:USERPROFILE\.oh-my-posh\themes",
+        "/usr/local/share/oh-my-posh/themes",
+        "/opt/oh-my-posh/themes"
+    )
+    
+    foreach ($path in $possibleThemePaths) {
+        if (Test-Path $path) {
+            $OMP_THEMES = $path
+            break
+        }
+    }
+    
+    # If still not found, try to get it from oh-my-posh executable location
+    if (-not $OMP_THEMES) {
+        $ompExe = Get-Command oh-my-posh -ErrorAction SilentlyContinue
+        if ($ompExe) {
+            $ompDir = Split-Path $ompExe.Source
+            $OMP_THEMES = Join-Path $ompDir "themes"
+        }
+    }
+}
 
 function omp_ls {
     Get-ChildItem $OMP_THEMES -Name "*.omp.json" | ForEach-Object { $_.Replace(".omp.json", "") }
