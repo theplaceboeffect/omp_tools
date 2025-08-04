@@ -1,11 +1,51 @@
+## Version: v01.09.01
 ## -------- OH-MY-POSH --------
-## Version: v01.09.00
+
+# Parse command-line arguments
+param(
+    [switch]$h,
+    [switch]$e,
+    [switch]$v
+)
 
 # Verify PowerShell 7 (pwsh) is being used
 if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "This script requires PowerShell 7 (pwsh). Current version: $($PSVersionTable.PSVersion)"
     Write-Error "Please run this script with PowerShell 7 or later."
     exit 1
+}
+
+# Show version if -v flag is provided
+if ($v) {
+    Write-Host "Version: v01.09.01" -ForegroundColor Green
+    return
+}
+
+# Show help if -h flag is provided
+if ($h) {
+    Write-Host "=== OH-MY-POSH TOOLS HELP ===" -ForegroundColor Cyan
+    Write-Host "Usage: . dot-oh-my-posh.ps1 [-h] [-e] [-v]" -ForegroundColor Yellow
+    Write-Host "" -ForegroundColor White
+    Write-Host "Options:" -ForegroundColor Yellow
+    Write-Host "  -h    Show this help message" -ForegroundColor White
+    Write-Host "  -e    Show environment information only" -ForegroundColor White
+    Write-Host "  -v    Show version information" -ForegroundColor White
+    Write-Host "" -ForegroundColor White
+    Write-Host "Functions:" -ForegroundColor Yellow
+    Write-Host "  omp_ls    List available themes" -ForegroundColor White
+    Write-Host "  omp_set   Set theme (use without args to see current/default)" -ForegroundColor White
+    Write-Host "  omp_show  Interactive theme browser" -ForegroundColor White
+    Write-Host "" -ForegroundColor White
+    Write-Host "Examples:" -ForegroundColor Yellow
+    Write-Host "  . dot-oh-my-posh.ps1          # Load with default theme" -ForegroundColor White
+    Write-Host "  . dot-oh-my-posh.ps1 -e       # Show environment info only" -ForegroundColor White
+    Write-Host "  . dot-oh-my-posh.ps1 -h       # Show this help" -ForegroundColor White
+    Write-Host "  . dot-oh-my-posh.ps1 -v       # Show version" -ForegroundColor White
+    Write-Host "  omp_ls                        # List themes" -ForegroundColor White
+    Write-Host "  omp_set nu4a                  # Set theme to nu4a" -ForegroundColor White
+    Write-Host "  omp_show                      # Interactive theme browser" -ForegroundColor White
+    Write-Host "===============================" -ForegroundColor Cyan
+    return
 }
 
 # Environment Detection for Windows Compatibility
@@ -136,17 +176,21 @@ function Get-OMPEnvironment {
     return $envInfo
 }
 
-# Get and display environment information
+# Get environment information
 $OMP_ENVIRONMENT = Get-OMPEnvironment
-Write-Host "=== OH-MY-POSH ENVIRONMENT ===" -ForegroundColor Cyan
-Write-Host "Version: v01.09.00" -ForegroundColor Green
-Write-Host "Operating System: $($OMP_ENVIRONMENT.OperatingSystem)" -ForegroundColor Yellow
-Write-Host "Shell: $($OMP_ENVIRONMENT.Shell)" -ForegroundColor Yellow
-Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
-Write-Host "oh-my-posh Themes Dir: $($OMP_ENVIRONMENT.OMPThemesDir)" -ForegroundColor Yellow
-Write-Host "oh-my-posh Executable: $($OMP_ENVIRONMENT.OMPExecutable)" -ForegroundColor Yellow
-Write-Host "Package Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
-Write-Host "===============================" -ForegroundColor Cyan
+
+# Show environment information only if -e flag is provided
+if ($e) {
+    Write-Host "=== OH-MY-POSH ENVIRONMENT ===" -ForegroundColor Cyan
+    Write-Host "Operating System: $($OMP_ENVIRONMENT.OperatingSystem)" -ForegroundColor Yellow
+    Write-Host "Shell: $($OMP_ENVIRONMENT.Shell)" -ForegroundColor Yellow
+    Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
+    Write-Host "oh-my-posh Themes Dir: $($OMP_ENVIRONMENT.OMPThemesDir)" -ForegroundColor Yellow
+    Write-Host "oh-my-posh Executable: $($OMP_ENVIRONMENT.OMPExecutable)" -ForegroundColor Yellow
+    Write-Host "Package Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
+    Write-Host "===============================" -ForegroundColor Cyan
+    return
+}
 
 $DEFAULT_OMP_THEME = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
 if (-not $DEFAULT_OMP_THEME) {
@@ -154,6 +198,7 @@ if (-not $DEFAULT_OMP_THEME) {
 }
 
 # Use the detected themes directory from environment detection
+
 $OMP_THEMES = $OMP_ENVIRONMENT.OMPThemesDir
 
 # If themes directory not detected, try fallback paths
@@ -390,72 +435,11 @@ function _omp_completion {
 Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 
-function omp_help {
-    Write-Host "=== OH-MY-POSH TOOLS HELP ===" -ForegroundColor Cyan
-    Write-Host "Version: v01.09.00" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Available Functions:" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "  omp_ls" -ForegroundColor White
-    Write-Host "    List all available oh-my-posh themes" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  omp_set [theme]" -ForegroundColor White
-    Write-Host "    Set oh-my-posh theme. Without parameter, shows current and default themes" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  omp_show [theme]" -ForegroundColor White
-    Write-Host "    Interactive theme previewer with navigation" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  omp_install" -ForegroundColor White
-    Write-Host "    Install the script to your home directory for permanent use" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  omp_help" -ForegroundColor White
-    Write-Host "    Show this help message" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "Examples:" -ForegroundColor Yellow
-    Write-Host "  omp_ls                    # List all themes" -ForegroundColor Gray
-    Write-Host "  omp_set                   # Show current and default themes" -ForegroundColor Gray
-    Write-Host "  omp_set agnoster         # Set theme to agnoster" -ForegroundColor Gray
-    Write-Host "  omp_show                  # Interactive theme browser" -ForegroundColor Gray
-    Write-Host "  omp_install               # Install script permanently" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "===============================" -ForegroundColor Cyan
-}
+# Initialize oh-my-posh with default theme (only if no flags provided)
+if (-not $h -and -not $e -and -not $v) {
+    $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
+    Invoke-Expression $initCmd
+} 
 
-function omp_install {
-    # Determine script directory - handle both direct execution and sourcing
-    $scriptDir = '.'
-    if (-not $scriptDir) {
-        # If script is sourced, use current location
-        $scriptDir = Get-Location
-    }
-    
-    $homeDir = $env:USERPROFILE
-    if (-not $homeDir) {
-        $homeDir = $env:HOME
-    }
-    
-    Write-Host "Installing Oh My Posh tools..." -ForegroundColor Green
-    
-    # Copy the PowerShell script to home directory
-    $targetFile = Join-Path $homeDir ".oh-my-posh-tools.ps1"
-    try {
-        Copy-Item (Join-Path $scriptDir "dot-oh-my-posh.ps1") $targetFile -Force
-        Write-Host "✓ PowerShell script installed to $targetFile" -ForegroundColor Green
-        Write-Host ""
-        Write-Host "To use the tools, add this line to your PowerShell profile:" -ForegroundColor Yellow
-        Write-Host ". ~/.oh-my-posh-tools.ps1" -ForegroundColor Cyan
-        Write-Host ""
-        Write-Host "Or run this command to add it automatically:" -ForegroundColor Yellow
-        Write-Host "Add-Content `$PROFILE '. ~/.oh-my-posh-tools.ps1'" -ForegroundColor Cyan
-    }
-    catch {
-        Write-Host "Error installing Oh My Posh tools: $($_.Exception.Message)" -ForegroundColor Red
-    }
-}
 
-# Initialize oh-my-posh with default theme
-$initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
-Invoke-Expression $initCmd
 
-# Display help information
-omp_help 

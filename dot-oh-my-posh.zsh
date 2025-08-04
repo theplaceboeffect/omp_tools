@@ -1,5 +1,59 @@
+## Version: v01.09.01
 ## -------- OH-MY-POSH --------
-## Version: v01.09.00
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h)
+            SHOW_HELP=true
+            shift
+            ;;
+        -e)
+            SHOW_ENV=true
+            shift
+            ;;
+        -v)
+            SHOW_VERSION=true
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+# Show version if -v flag is provided
+if [[ "$SHOW_VERSION" == "true" ]]; then
+    echo "Version: v01.09.01"
+    return
+fi
+
+# Show help if -h flag is provided
+if [[ "$SHOW_HELP" == "true" ]]; then
+    echo "=== OH-MY-POSH TOOLS HELP ==="
+    echo "Usage: . dot-oh-my-posh.zsh [-h] [-e] [-v]"
+    echo ""
+    echo "Options:"
+    echo "  -h    Show this help message"
+    echo "  -e    Show environment information only"
+    echo "  -v    Show version information"
+    echo ""
+    echo "Functions:"
+    echo "  omp_ls    List available themes"
+    echo "  omp_set   Set theme (use without args to see current/default)"
+    echo "  omp_show  Interactive theme browser"
+    echo ""
+    echo "Examples:"
+    echo "  . dot-oh-my-posh.zsh          # Load with default theme"
+    echo "  . dot-oh-my-posh.zsh -e       # Show environment info only"
+    echo "  . dot-oh-my-posh.zsh -h       # Show this help"
+    echo "  . dot-oh-my-posh.zsh -v       # Show version"
+    echo "  omp_ls                        # List themes"
+    echo "  omp_set nu4a                  # Set theme to nu4a"
+    echo "  omp_show                      # Interactive theme browser"
+    echo "==============================="
+    return
+fi
 
 # Environment Detection for Windows Compatibility
 get_omp_environment() {
@@ -71,18 +125,22 @@ get_omp_environment() {
     echo "$env_info"
 }
 
-# Get and display environment information
+# Get environment information
 OMP_ENVIRONMENT=$(get_omp_environment)
-echo "=== OH-MY-POSH ENVIRONMENT ==="
-echo "Version: v01.09.00"
-echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
-echo "Shell: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f2 | cut -d':' -f2)"
-echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"
-echo "Package Manager: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f4 | cut -d':' -f2)"
-echo "==============================="
+
+# Show environment information only if -e flag is provided
+if [[ "$SHOW_ENV" == "true" ]]; then
+    echo "=== OH-MY-POSH ENVIRONMENT ==="
+    echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
+    echo "Shell: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f2 | cut -d':' -f2)"
+    echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"
+    echo "Package Manager: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f4 | cut -d':' -f2)"
+    echo "==============================="
+    return
+fi
 
 DEFAULT_OMP_THEME=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
-OMP_THEMES=$(brew --prefix oh-my-posh)/themes
+OMP_THEMES=$(brew --prefix oh-my-posh)themes
 
 alias omp_ls="ls $OMP_THEMES"
 
@@ -250,36 +308,11 @@ _omp_set_completion() {
 compdef _omp_set_completion omp_set
 compdef _omp_set_completion omp_show
 
-function omp_help() {
-    echo "=== OH-MY-POSH TOOLS HELP ==="
-    echo "Version: v01.09.00"
-    echo ""
-    echo "Available Functions:"
-    echo ""
-    echo "  omp_ls"
-    echo "    List all available oh-my-posh themes"
-    echo ""
-    echo "  omp_set [theme]"
-    echo "    Set oh-my-posh theme. Without parameter, shows current and default themes"
-    echo ""
-    echo "  omp_show [theme]"
-    echo "    Interactive theme previewer with navigation"
-    echo ""
-    echo "  omp_install"
-    echo "    Install the script to your home directory for permanent use"
-    echo ""
-    echo "  omp_help"
-    echo "    Show this help message"
-    echo ""
-    echo "Examples:"
-    echo "  omp_ls                    # List all themes"
-    echo "  omp_set                   # Show current and default themes"
-    echo "  omp_set agnoster         # Set theme to agnoster"
-    echo "  omp_show                  # Interactive theme browser"
-    echo "  omp_install               # Install script permanently"
-    echo ""
-    echo "==============================="
-}
+# Initialize oh-my-posh with default theme (only if no flags provided)
+if [[ "$SHOW_HELP" != "true" && "$SHOW_ENV" != "true" && "$SHOW_VERSION" != "true" ]]; then
+    eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
+fi
 
-# Display help information
-omp_help
+
+
+
