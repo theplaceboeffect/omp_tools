@@ -421,10 +421,10 @@ function omp_show {
 
 # Install function
 function omp_install {
-    $scriptPath = $PSScriptRoot
+    $scriptPath = "."
     $scriptFile = Join-Path $scriptPath "dot-oh-my-posh.ps1"
-    $homeDir = $env:USERPROFILE
-    $installPath = Join-Path $homeDir "dot-oh-my-posh.ps1"
+    $homeDir = $HOME
+    $installPath = Join-Path $homeDir ".oh-my-posh-tools.ps1"
     
     if (-not (Test-Path $scriptFile)) {
         Write-Host "Error: Script not found at expected location: $scriptFile" -ForegroundColor Red
@@ -489,6 +489,62 @@ function omp_help {
     Write-Host "  omp_env                       # Show environment info" -ForegroundColor White
     Write-Host "  omp_install                   # Install script permanently" -ForegroundColor White
     Write-Host "===============================" -ForegroundColor Cyan
+}
+
+# Main omp function that acts as a wrapper for all individual functions
+function omp {
+    param(
+        [Parameter(Position=0)]
+        [string]$Command,
+        [Parameter(ValueFromRemainingArguments=$true)]
+        [string[]]$Arguments
+    )
+    
+    if (-not $Command) {
+        Write-Host "Usage: omp <command> [args...]" -ForegroundColor Yellow
+        Write-Host "" -ForegroundColor White
+        Write-Host "Available commands:" -ForegroundColor Yellow
+        Write-Host "  ls       List available themes" -ForegroundColor White
+        Write-Host "  set      Set theme (use without args to see current/default)" -ForegroundColor White
+        Write-Host "  show     Interactive theme browser" -ForegroundColor White
+        Write-Host "  help     Show help message" -ForegroundColor White
+        Write-Host "  env      Show environment information" -ForegroundColor White
+        Write-Host "  install  Install script to home directory" -ForegroundColor White
+        Write-Host "" -ForegroundColor White
+        Write-Host "Examples:" -ForegroundColor Yellow
+        Write-Host "  omp ls                     # List themes" -ForegroundColor White
+        Write-Host "  omp set nu4a               # Set theme to nu4a" -ForegroundColor White
+        Write-Host "  omp show                   # Interactive theme browser" -ForegroundColor White
+        Write-Host "  omp help                   # Show help" -ForegroundColor White
+        Write-Host "  omp env                    # Show environment info" -ForegroundColor White
+        Write-Host "  omp install                # Install script permanently" -ForegroundColor White
+        return
+    }
+    
+    switch ($Command) {
+        "ls" {
+            omp_ls @Arguments
+        }
+        "set" {
+            omp_set @Arguments
+        }
+        "show" {
+            omp_show @Arguments
+        }
+        "help" {
+            omp_help @Arguments
+        }
+        "env" {
+            omp_env @Arguments
+        }
+        "install" {
+            omp_install @Arguments
+        }
+        default {
+            Write-Host "Unknown command: $Command" -ForegroundColor Red
+            Write-Host "Use 'omp help' for available commands" -ForegroundColor Yellow
+        }
+    }
 }
 
 # Tab completion for omp_set and omp_show

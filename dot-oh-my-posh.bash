@@ -48,9 +48,6 @@ if [[ "$SHOW_HELP" == "true" ]]; then
     echo "  omp_ls    List available themes"
     echo "  omp_set   Set theme (use without args to see current/default)"
     echo "  omp_show  Interactive theme browser"
-    echo "  omp_help  Show this help message"
-    echo "  omp_env   Show environment information"
-    echo "  omp_install Install script to home directory"
     echo ""
     echo "Examples:"
     echo "  . dot-oh-my-posh.bash         # Load with default theme"
@@ -60,9 +57,6 @@ if [[ "$SHOW_HELP" == "true" ]]; then
     echo "  omp_ls                        # List themes"
     echo "  omp_set nu4a                  # Set theme to nu4a"
     echo "  omp_show                      # Interactive theme browser"
-    echo "  omp_help                      # Show this help"
-    echo "  omp_env                       # Show environment info"
-    echo "  omp_install                   # Install script permanently"
     echo "==============================="
     return
 fi
@@ -199,7 +193,7 @@ function omp_show() {
     if [[ -n "$1" ]]; then
         local specified_theme="$1"
         # Find the index of the specified theme
-        for i in {1..$num_themes}; do
+        for i in $(seq 1 $num_themes); do
             if [[ "$(basename "${themes[$i]}" .omp.json)" == "$specified_theme" ]]; then
                 current_index=$i
                 break
@@ -207,7 +201,7 @@ function omp_show() {
         done
     else
         # Find the index of the current theme
-        for i in {1..$num_themes}; do
+        for i in $(seq 1 $num_themes); do
             if [[ "$(basename "${themes[$i]}" .omp.json)" == "$current_theme_name" ]]; then
                 current_index=$i
                 break
@@ -250,7 +244,7 @@ function omp_show() {
         printf "\033[44m\033[1;37m%s\033[0m\n" "$header_text"
         
         # Print the rendered prompt
-        oh-my-posh print primary --config "$theme_file" --shell bash | sed 's/\\\[//g; s/\\\]//g'
+        oh-my-posh print primary --config "$theme_file" --shell bash
         
         # Print the instructions
         printf "\n\033[44m\033[1;37m%s\033[0m" " Use j/k to cycle, Enter to set, s to set default, q to quit "
@@ -325,7 +319,7 @@ omp_install() {
     script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     local script_file="$script_path/dot-oh-my-posh.bash"
     local home_dir="$HOME"
-    local install_path="$home_dir/dot-oh-my-posh.bash"
+    local install_path="$home_dir/.oh-my-posh-tools.bash"
     
     if [[ ! -f "$script_file" ]]; then
         echo "Error: Script not found at expected location: $script_file"
@@ -336,7 +330,7 @@ omp_install() {
         echo "✓ Script installed to: $install_path"
         echo ""
         echo "To use permanently, add this line to your bash profile:"
-        echo "  . ~/dot-oh-my-posh.bash"
+        echo "  . ~/.oh-my-posh-tools.bash"
         echo ""
         echo "To find your profile location, run:"
         echo "  echo \$HOME/.bashrc"
@@ -388,6 +382,59 @@ omp_help() {
     echo "  omp_env                       # Show environment info"
     echo "  omp_install                   # Install script permanently"
     echo "==============================="
+}
+
+# Main omp function that acts as a wrapper for all individual functions
+omp() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: omp <command> [args...]"
+        echo ""
+        echo "Available commands:"
+        echo "  ls       List available themes"
+        echo "  set      Set theme (use without args to see current/default)"
+        echo "  show     Interactive theme browser"
+        echo "  help     Show help message"
+        echo "  env      Show environment information"
+        echo "  install  Install script to home directory"
+        echo ""
+        echo "Examples:"
+        echo "  omp ls                     # List themes"
+        echo "  omp set nu4a               # Set theme to nu4a"
+        echo "  omp show                   # Interactive theme browser"
+        echo "  omp help                   # Show help"
+        echo "  omp env                    # Show environment info"
+        echo "  omp install                # Install script permanently"
+        return 1
+    fi
+    
+    local command="$1"
+    shift
+    
+    case "$command" in
+        ls)
+            omp_ls "$@"
+            ;;
+        set)
+            omp_set "$@"
+            ;;
+        show)
+            omp_show "$@"
+            ;;
+        help)
+            omp_help "$@"
+            ;;
+        env)
+            omp_env "$@"
+            ;;
+        install)
+            omp_install "$@"
+            ;;
+        *)
+            echo "Unknown command: $command"
+            echo "Use 'omp help' for available commands"
+            return 1
+            ;;
+    esac
 }
 
 # Initialize oh-my-posh with default theme (only if no flags provided)

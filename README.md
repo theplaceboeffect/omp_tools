@@ -36,6 +36,11 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
 #### `omp_ls`
 - Lists all available Oh My Posh themes
 
+#### `omp_init`
+- Sets the Oh My Posh theme to the default theme
+- Reads the default theme from `~/.config/omp_tools/default`
+- Falls back to "nu4a" if no default is configured
+
 ## Installation
 
 1. Clone this repository
@@ -68,6 +73,9 @@ omp_show nu4a
 
 # List all available themes
 omp_ls
+
+# Initialize with default theme
+omp_init
 ```
 
 ## Configuration

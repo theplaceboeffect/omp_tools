@@ -294,6 +294,47 @@ function _omp_completion {
 Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 
+# Main omp function that acts as a wrapper for all individual functions
+function omp {
+    param(
+        [Parameter(Position=0)]
+        [string]$Command,
+        [Parameter(ValueFromRemainingArguments=$true)]
+        [string[]]$Arguments
+    )
+    
+    if (-not $Command) {
+        Write-Host "Usage: omp <command> [args...]" -ForegroundColor Yellow
+        Write-Host "" -ForegroundColor White
+        Write-Host "Available commands:" -ForegroundColor Yellow
+        Write-Host "  ls       List available themes" -ForegroundColor White
+        Write-Host "  set      Set theme (use without args to see current/default)" -ForegroundColor White
+        Write-Host "  show     Interactive theme browser" -ForegroundColor White
+        Write-Host "" -ForegroundColor White
+        Write-Host "Examples:" -ForegroundColor Yellow
+        Write-Host "  omp ls                     # List themes" -ForegroundColor White
+        Write-Host "  omp set nu4a               # Set theme to nu4a" -ForegroundColor White
+        Write-Host "  omp show                   # Interactive theme browser" -ForegroundColor White
+        return
+    }
+    
+    switch ($Command) {
+        "ls" {
+            omp_ls @Arguments
+        }
+        "set" {
+            omp_set @Arguments
+        }
+        "show" {
+            omp_show @Arguments
+        }
+        default {
+            Write-Host "Unknown command: $Command" -ForegroundColor Red
+            Write-Host "Use 'omp' for available commands" -ForegroundColor Yellow
+        }
+    }
+}
+
 # Initialize oh-my-posh with default theme
 $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
 Invoke-Expression $initCmd 

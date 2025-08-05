@@ -246,4 +246,42 @@ _omp_set_completion() {
 }
 
 compdef _omp_set_completion omp_set
-compdef _omp_set_completion omp_show 
+compdef _omp_set_completion omp_show
+
+# Main omp function that acts as a wrapper for all individual functions
+omp() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: omp <command> [args...]"
+        echo ""
+        echo "Available commands:"
+        echo "  ls       List available themes"
+        echo "  set      Set theme (use without args to see current/default)"
+        echo "  show     Interactive theme browser"
+        echo ""
+        echo "Examples:"
+        echo "  omp ls                     # List themes"
+        echo "  omp set nu4a               # Set theme to nu4a"
+        echo "  omp show                   # Interactive theme browser"
+        return 1
+    fi
+    
+    local command="$1"
+    shift
+    
+    case "$command" in
+        ls)
+            omp_ls "$@"
+            ;;
+        set)
+            omp_set "$@"
+            ;;
+        show)
+            omp_show "$@"
+            ;;
+        *)
+            echo "Unknown command: $command"
+            echo "Use 'omp' for available commands"
+            return 1
+            ;;
+    esac
+} 
