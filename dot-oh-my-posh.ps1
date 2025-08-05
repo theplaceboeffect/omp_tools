@@ -320,16 +320,20 @@ function omp_show {
         
         $headerText = " Previewing theme: $themeName$isCurrent$isDefault "
 
-        # Print the header
+       # Print the header
         Write-Host $headerText -BackgroundColor Blue -ForegroundColor White
-        
+        Write-Host "--------------------------------"
+        Write-Host " "
+
         # Print the rendered prompt
-        $promptOutput = oh-my-posh print primary --config $themeFile
-        Write-Host $promptOutput
-        
+        oh-my-posh print primary --config $themeFile
+       
         # Print the instructions
+        Write-Host "echo hello world"
+        Write-Host " "
+        Write-Host "--------------------------------"
         Write-Host " Use j/k to cycle, Enter to set, s to set default, q to quit " -BackgroundColor Blue -ForegroundColor White -NoNewline
-    }
+   }
 
     # Main loop to handle keypresses
     while ($true) {
