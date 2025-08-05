@@ -1,10 +1,10 @@
 ## Version: v01.09.03
 ## -------- OH-MY-POSH --------
 
-# Verify zsh is being used
-if [[ -z "$ZSH_VERSION" ]]; then
-    echo "Error: This script requires zsh. Current shell: $SHELL"
-    echo "Please run this script with zsh."
+# Verify bash is being used
+if [[ -z "$BASH_VERSION" ]]; then
+    echo "Error: This script requires bash. Current shell: $SHELL"
+    echo "Please run this script with bash."
     return 1
 fi
 
@@ -37,7 +37,7 @@ fi
 # Show help if -h flag is provided
 if [[ "$SHOW_HELP" == "true" ]]; then
     echo "=== OH-MY-POSH TOOLS HELP ==="
-    echo "Usage: . dot-oh-my-posh.zsh [-h] [-e] [-v]"
+    echo "Usage: . dot-oh-my-posh.bash [-h] [-e] [-v]"
     echo ""
     echo "Options:"
     echo "  -h    Show this help message"
@@ -48,15 +48,21 @@ if [[ "$SHOW_HELP" == "true" ]]; then
     echo "  omp_ls    List available themes"
     echo "  omp_set   Set theme (use without args to see current/default)"
     echo "  omp_show  Interactive theme browser"
+    echo "  omp_help  Show this help message"
+    echo "  omp_env   Show environment information"
+    echo "  omp_install Install script to home directory"
     echo ""
     echo "Examples:"
-    echo "  . dot-oh-my-posh.zsh          # Load with default theme"
-    echo "  . dot-oh-my-posh.zsh -e       # Show environment info only"
-    echo "  . dot-oh-my-posh.zsh -h       # Show this help"
-    echo "  . dot-oh-my-posh.zsh -v       # Show version"
+    echo "  . dot-oh-my-posh.bash         # Load with default theme"
+    echo "  . dot-oh-my-posh.bash -e      # Show environment info only"
+    echo "  . dot-oh-my-posh.bash -h      # Show this help"
+    echo "  . dot-oh-my-posh.bash -v      # Show version"
     echo "  omp_ls                        # List themes"
     echo "  omp_set nu4a                  # Set theme to nu4a"
     echo "  omp_show                      # Interactive theme browser"
+    echo "  omp_help                      # Show this help"
+    echo "  omp_env                       # Show environment info"
+    echo "  omp_install                   # Install script permanently"
     echo "==============================="
     return
 fi
@@ -73,7 +79,7 @@ get_omp_environment() {
     esac
     
     # Determine Shell
-    local shell="zsh"
+    local shell="bash"
     
     # Determine oh-my-posh installation directory
     local omp_path=""
@@ -175,7 +181,7 @@ function omp_set() {
     
     echo "Setting theme to $1"
     local theme_cmd
-    theme_cmd="$(oh-my-posh init zsh --config "$OMP_THEMES/$1.omp.json")"
+    theme_cmd="$(oh-my-posh init bash --config "$OMP_THEMES/$1.omp.json")"
     eval "$theme_cmd"
 }
 
@@ -217,7 +223,7 @@ function omp_show() {
 
     # Function to display the current theme
     display_theme() {
-        tput clear
+        clear
         local theme_file=${themes[$current_index]}
         local theme_name
         theme_name=$(basename "$theme_file" .omp.json)
@@ -240,14 +246,14 @@ function omp_show() {
         
         local header_text=" Previewing theme: $theme_name$is_current$is_default "
 
-        # Print the header
-        print "\e[48;2;0;0;255m\e[1;97m$header_text\e[0m"
+        # Print the header with blue background and white text
+        printf "\033[44m\033[1;37m%s\033[0m\n" "$header_text"
         
         # Print the rendered prompt
-        print -P "$(oh-my-posh print primary --config "$theme_file")"
+        oh-my-posh print primary --config "$theme_file" --shell bash | sed 's/\\\[//g; s/\\\]//g'
         
         # Print the instructions
-        print -n "\e[48;2;0;0;255m\e[1;97m Use j/k to cycle, \u23ce to set, s to set default, q to quit \e[0m"
+        printf "\n\033[44m\033[1;37m%s\033[0m" " Use j/k to cycle, Enter to set, s to set default, q to quit "
     }
 
     # Main loop to handle keypresses
@@ -255,7 +261,7 @@ function omp_show() {
         display_theme
         
         # Read a single keypress
-        read -s -r -k 1 key
+        read -s -r -n 1 key
 
         case "$key" in
             'k') # Up
@@ -271,7 +277,7 @@ function omp_show() {
                 fi
                 ;;
             $'\n') # Enter
-                tput clear
+                clear
                 local selected_theme
                 selected_theme=$(basename "${themes[$current_index]}" .omp.json)
                 omp_set "$selected_theme"
@@ -286,7 +292,7 @@ function omp_show() {
                 break
                 ;;
             's') # Set as default
-                tput clear
+                clear
                 local selected_theme
                 selected_theme=$(basename "${themes[$current_index]}" .omp.json)
                 mkdir -p ~/.config/omp_tools
@@ -296,7 +302,7 @@ function omp_show() {
                 break
                 ;;
             'q') # Quit
-                tput clear
+                clear
                 # Restore the original theme
                 omp_set "$original_theme_name"
                 echo "Theme selection cancelled."
@@ -313,21 +319,13 @@ function omp_show() {
     done
 }
 
-autoload -Uz compinit
-compinit
-_omp_set_completion() {
-	local -a themes
-	themes=(${(f)"$(find "$OMP_THEMES" -name '*.omp.json' -exec basename {} .omp.json \;)"})
-	compadd -a themes
-}
-
 # Install function
 omp_install() {
     local script_path
-    script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
-    local script_file="$script_path/dot-oh-my-posh.zsh"
+    script_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local script_file="$script_path/dot-oh-my-posh.bash"
     local home_dir="$HOME"
-    local install_path="$home_dir/dot-oh-my-posh.zsh"
+    local install_path="$home_dir/dot-oh-my-posh.bash"
     
     if [[ ! -f "$script_file" ]]; then
         echo "Error: Script not found at expected location: $script_file"
@@ -337,11 +335,11 @@ omp_install() {
     if cp "$script_file" "$install_path"; then
         echo "✓ Script installed to: $install_path"
         echo ""
-        echo "To use permanently, add this line to your zsh profile:"
-        echo "  . ~/dot-oh-my-posh.zsh"
+        echo "To use permanently, add this line to your bash profile:"
+        echo "  . ~/dot-oh-my-posh.bash"
         echo ""
         echo "To find your profile location, run:"
-        echo "  echo \$ZDOTDIR/.zshrc"
+        echo "  echo \$HOME/.bashrc"
     else
         echo "Error installing script"
         return 1
@@ -363,7 +361,7 @@ omp_env() {
 # Help function
 omp_help() {
     echo "=== OH-MY-POSH TOOLS HELP ==="
-    echo "Usage: . dot-oh-my-posh.zsh [-h] [-e] [-v]"
+    echo "Usage: . dot-oh-my-posh.bash [-h] [-e] [-v]"
     echo ""
     echo "Options:"
     echo "  -h    Show this help message"
@@ -379,10 +377,10 @@ omp_help() {
     echo "  omp_install Install script to home directory"
     echo ""
     echo "Examples:"
-    echo "  . dot-oh-my-posh.zsh          # Load with default theme"
-    echo "  . dot-oh-my-posh.zsh -e       # Show environment info only"
-    echo "  . dot-oh-my-posh.zsh -h       # Show this help"
-    echo "  . dot-oh-my-posh.zsh -v       # Show version"
+    echo "  . dot-oh-my-posh.bash         # Load with default theme"
+    echo "  . dot-oh-my-posh.bash -e      # Show environment info only"
+    echo "  . dot-oh-my-posh.bash -h      # Show this help"
+    echo "  . dot-oh-my-posh.bash -v      # Show version"
     echo "  omp_ls                        # List themes"
     echo "  omp_set nu4a                  # Set theme to nu4a"
     echo "  omp_show                      # Interactive theme browser"
@@ -392,15 +390,7 @@ omp_help() {
     echo "==============================="
 }
 
-compdef _omp_set_completion omp_set
-compdef _omp_set_completion omp_show
-
 # Initialize oh-my-posh with default theme (only if no flags provided)
 if [[ "$SHOW_HELP" != "true" && "$SHOW_ENV" != "true" && "$SHOW_VERSION" != "true" ]]; then
-    eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
-fi
-
-
-
-
-
+    eval "$(oh-my-posh init bash --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
+fi 
