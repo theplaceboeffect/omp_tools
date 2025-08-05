@@ -242,11 +242,13 @@ function omp_show() {
 
         # Print the header
         print "\e[48;2;0;0;255m\e[1;97m$header_text\e[0m"
-        
+        print ""
+
         # Print the rendered prompt
         print -P "$(oh-my-posh print primary --config "$theme_file")"
         
         # Print the instructions
+        print ""
         print -n "\e[48;2;0;0;255m\e[1;97m Use j/k to cycle, \u23ce to set, s to set default, q to quit \e[0m"
     }
 
