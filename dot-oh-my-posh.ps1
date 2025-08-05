@@ -1,4 +1,4 @@
-## Version: v01.09.01
+## Version: v01.09.02
 ## -------- OH-MY-POSH --------
 
 # Parse command-line arguments
@@ -17,7 +17,7 @@ if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt
 
 # Show version if -v flag is provided
 if ($v) {
-    Write-Host "Version: v01.09.01" -ForegroundColor Green
+    Write-Host "Version: v01.09.02" -ForegroundColor Green
     return
 }
 
@@ -417,6 +417,78 @@ function omp_show {
             break
         }
     }
+}
+
+# Install function
+function omp_install {
+    $scriptPath = $PSScriptRoot
+    $scriptFile = Join-Path $scriptPath "dot-oh-my-posh.ps1"
+    $homeDir = $env:USERPROFILE
+    $installPath = Join-Path $homeDir "dot-oh-my-posh.ps1"
+    
+    if (-not (Test-Path $scriptFile)) {
+        Write-Host "Error: Script not found at expected location: $scriptFile" -ForegroundColor Red
+        return
+    }
+    
+    try {
+        Copy-Item $scriptFile $installPath -Force
+        Write-Host "✓ Script installed to: $installPath" -ForegroundColor Green
+        Write-Host "" -ForegroundColor White
+        Write-Host "To use permanently, add this line to your PowerShell profile:" -ForegroundColor Yellow
+        Write-Host "  . ~/dot-oh-my-posh.ps1" -ForegroundColor White
+        Write-Host "" -ForegroundColor White
+        Write-Host "To find your profile location, run:" -ForegroundColor Yellow
+        Write-Host "  echo $PROFILE" -ForegroundColor White
+    }
+    catch {
+        Write-Host "Error installing script: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+# Environment function
+function omp_env {
+    $envInfo = Get-OMPEnvironment
+    Write-Host "=== OH-MY-POSH ENVIRONMENT ===" -ForegroundColor Cyan
+    Write-Host "Operating System: $($envInfo.OperatingSystem)" -ForegroundColor Yellow
+    Write-Host "Shell: $($envInfo.Shell)" -ForegroundColor Yellow
+    Write-Host "oh-my-posh Install Dir: $($envInfo.OMPInstallDir)" -ForegroundColor Yellow
+    Write-Host "oh-my-posh Themes Dir: $($envInfo.OMPThemesDir)" -ForegroundColor Yellow
+    Write-Host "oh-my-posh Executable: $($envInfo.OMPExecutable)" -ForegroundColor Yellow
+    Write-Host "Package Manager: $($envInfo.PackageManager)" -ForegroundColor Yellow
+    Write-Host "===============================" -ForegroundColor Cyan
+}
+
+# Help function
+function omp_help {
+    Write-Host "=== OH-MY-POSH TOOLS HELP ===" -ForegroundColor Cyan
+    Write-Host "Usage: . dot-oh-my-posh.ps1 [-h] [-e] [-v]" -ForegroundColor Yellow
+    Write-Host "" -ForegroundColor White
+    Write-Host "Options:" -ForegroundColor Yellow
+    Write-Host "  -h    Show this help message" -ForegroundColor White
+    Write-Host "  -e    Show environment information only" -ForegroundColor White
+    Write-Host "  -v    Show version information" -ForegroundColor White
+    Write-Host "" -ForegroundColor White
+    Write-Host "Functions:" -ForegroundColor Yellow
+    Write-Host "  omp_ls    List available themes" -ForegroundColor White
+    Write-Host "  omp_set   Set theme (use without args to see current/default)" -ForegroundColor White
+    Write-Host "  omp_show  Interactive theme browser" -ForegroundColor White
+    Write-Host "  omp_help  Show this help message" -ForegroundColor White
+    Write-Host "  omp_env   Show environment information" -ForegroundColor White
+    Write-Host "  omp_install Install script to home directory" -ForegroundColor White
+    Write-Host "" -ForegroundColor White
+    Write-Host "Examples:" -ForegroundColor Yellow
+    Write-Host "  . dot-oh-my-posh.ps1          # Load with default theme" -ForegroundColor White
+    Write-Host "  . dot-oh-my-posh.ps1 -e       # Show environment info only" -ForegroundColor White
+    Write-Host "  . dot-oh-my-posh.ps1 -h       # Show this help" -ForegroundColor White
+    Write-Host "  . dot-oh-my-posh.ps1 -v       # Show version" -ForegroundColor White
+    Write-Host "  omp_ls                        # List themes" -ForegroundColor White
+    Write-Host "  omp_set nu4a                  # Set theme to nu4a" -ForegroundColor White
+    Write-Host "  omp_show                      # Interactive theme browser" -ForegroundColor White
+    Write-Host "  omp_help                      # Show this help" -ForegroundColor White
+    Write-Host "  omp_env                       # Show environment info" -ForegroundColor White
+    Write-Host "  omp_install                   # Install script permanently" -ForegroundColor White
+    Write-Host "===============================" -ForegroundColor Cyan
 }
 
 # Tab completion for omp_set and omp_show
