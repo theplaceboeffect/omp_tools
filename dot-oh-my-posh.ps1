@@ -240,7 +240,10 @@ function omp_set {
     
     if (-not $Theme) {
         # Display current and default themes when no parameter is provided
-        $currentThemeName = Split-Path $env:POSH_THEME -LeafBase -ErrorAction SilentlyContinue
+        $currentThemeName = ""
+        if ($env:POSH_THEME) {
+            $currentThemeName = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetFileNameWithoutExtension($env:POSH_THEME))
+        }
         $defaultTheme = Get-Content ~/.config/omp_tools/default -ErrorAction SilentlyContinue | ForEach-Object { $_ } | Where-Object { $_ } | Select-Object -First 1
         if (-not $defaultTheme) {
             $defaultTheme = "nu4a"
@@ -268,7 +271,10 @@ function omp_show {
     $currentIndex = 0
 
     # Get the current theme name from the POSH_THEME env var
-    $currentThemeName = Split-Path $env:POSH_THEME -LeafBase -ErrorAction SilentlyContinue
+    $currentThemeName = ""
+    if ($env:POSH_THEME) {
+        $currentThemeName = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetFileNameWithoutExtension($env:POSH_THEME))
+    }
 
     # If a theme is specified as argument, start with that theme
     if ($StartTheme) {
@@ -292,7 +298,10 @@ function omp_show {
 
     # Store original theme to restore on quit
     $originalConfig = oh-my-posh export config
-    $originalThemeName = Split-Path $env:POSH_THEME -LeafBase -ErrorAction SilentlyContinue
+    $originalThemeName = ""
+    if ($env:POSH_THEME) {
+        $originalThemeName = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetFileNameWithoutExtension($env:POSH_THEME))
+    }
 
     # Function to display the current theme
     function Display-Theme {
