@@ -187,7 +187,7 @@ if ($e) {
     Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
     Write-Host "oh-my-posh Themes Dir: $($OMP_ENVIRONMENT.OMPThemesDir)" -ForegroundColor Yellow
     Write-Host "oh-my-posh Executable: $($OMP_ENVIRONMENT.OMPExecutable)" -ForegroundColor Yellow
-    Write-Host "Package Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
+    Write-Host "xPackage Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
     Write-Host "===============================" -ForegroundColor Cyan
     return
 }

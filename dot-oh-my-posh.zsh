@@ -139,7 +139,7 @@ OMP_ENVIRONMENT=$(get_omp_environment)
 # Show environment information only if -e flag is provided
 if [[ "$SHOW_ENV" == "true" ]]; then
     echo "=== OH-MY-POSH ENVIRONMENT ==="
-    echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
+    #echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
     echo "Shell: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f2 | cut -d':' -f2)"
     echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"
     echo "Package Manager: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f4 | cut -d':' -f2)"
@@ -355,7 +355,7 @@ omp_env() {
     local env_info
     env_info=$(get_omp_environment)
     echo "=== OH-MY-POSH ENVIRONMENT ==="
-    echo "Operating System: $(echo "$env_info" | cut -d'|' -f1 | cut -d':' -f2)"
+    #echo "Operating System: $(echo "$env_info" | cut -d'|' -f1 | cut -d':' -f2)"
     echo "Shell: $(echo "$env_info" | cut -d'|' -f2 | cut -d':' -f2)"
     echo "oh-my-posh Install Dir: $(echo "$env_info" | cut -d'|' -f3 | cut -d':' -f2)"
     echo "Package Manager: $(echo "$env_info" | cut -d'|' -f4 | cut -d':' -f2)"
