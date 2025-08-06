@@ -39,4 +39,15 @@ if (Test-Path "dot-oh-my-posh.zsh") {
     Write-Host "✗ dot-oh-my-posh.zsh not found" -ForegroundColor Red
 }
 
+# Update bash script
+if (Test-Path "dot-oh-my-posh.bash") {
+    $content = Get-Content "dot-oh-my-posh.bash" -Raw
+    $content = $content -replace '## Version: v[0-9]+\.[0-9]+\.[0-9]+', "## Version: $VERSION"
+    $content = $content -replace 'echo "Version: v[0-9]+\.[0-9]+\.[0-9]+"', "echo `"Version: $VERSION`""
+    Set-Content "dot-oh-my-posh.bash" $content
+    Write-Host "✓ Updated dot-oh-my-posh.bash" -ForegroundColor Green
+} else {
+    Write-Host "✗ dot-oh-my-posh.bash not found" -ForegroundColor Red
+}
+
 Write-Host "Version update complete!" -ForegroundColor Green 

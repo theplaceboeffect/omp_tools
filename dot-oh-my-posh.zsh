@@ -1,4 +1,4 @@
-## Version: v01.09.03
+## Version: v01.10.02
 ## -------- OH-MY-POSH --------
 
 # Verify zsh is being used
@@ -30,7 +30,7 @@ done
 
 # Show version if -v flag is provided
 if [[ "$SHOW_VERSION" == "true" ]]; then
-    echo "Version: v01.09.03"
+    echo "Version: v01.10.02"
     return
 fi
 
@@ -454,6 +454,9 @@ compdef _omp_set_completion omp_show
 if [[ "$SHOW_HELP" != "true" && "$SHOW_ENV" != "true" && "$SHOW_VERSION" != "true" ]]; then
     eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
 fi
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 # Oh My Posh Tools
 
-A command-line interface project with enhanced Oh My Posh configuration and theme management tools.
+A command-line interface project with enhanced Oh My Posh configuration and theme management tools for PowerShell, zsh, and bash.
 
 ## Features
 
@@ -56,6 +56,11 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
    . dot-oh-my-posh.ps1
    ```
 
+   **For Bash:**
+   ```bash
+   source dot-oh-my-posh.bash
+   ```
+
 ## Usage Examples
 
 ```bash
@@ -85,7 +90,7 @@ The default theme is stored in `~/.config/omp_tools/default` and defaults to "nu
 ## Requirements
 
 - Oh My Posh installed (via Homebrew, winget, Chocolatey, Scoop, apt, or yum)
-- Zsh shell (for zsh version) or PowerShell (for PowerShell version)
+- PowerShell 7+ (for PowerShell version), zsh (for zsh version), or bash (for bash version)
 - GitHub CLI (for repository management)
 
 ## License

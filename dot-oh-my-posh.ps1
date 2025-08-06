@@ -1,4 +1,4 @@
-## Version: v01.09.03
+## Version: v01.10.02
 ## -------- OH-MY-POSH --------
 
 # Parse command-line arguments
@@ -17,7 +17,7 @@ if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt
 
 # Show version if -v flag is provided
 if ($v) {
-    Write-Host "Version: v01.09.03" -ForegroundColor Green
+    Write-Host "Version: v01.10.02" -ForegroundColor Green
     return
 }
 
@@ -581,6 +581,9 @@ if (-not $h -and -not $e -and -not $v) {
     $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
     Invoke-Expression $initCmd
 } 
+
+
+
 
 
 

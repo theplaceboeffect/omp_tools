@@ -21,6 +21,7 @@ This document compares the different versions of Oh My Posh Tools scripts genera
 ### Original Implementation
 - **PowerShell**: `dot-oh-my-posh.ps1`
 - **Zsh**: `dot-oh-my-posh.zsh`
+- **Bash**: `dot-oh-my-posh.bash`
 
 ## Feature Completeness Analysis
 
@@ -89,6 +90,16 @@ This document compares the different versions of Oh My Posh Tools scripts genera
 ## Cross-Platform Compatibility
 
 ### PowerShell Versions
+
+| Feature | PRD | Guideline | Original |
+|---------|-----|-----------|----------|
+| Theme Setting | ✅ | ✅ | ✅ |
+| Interactive Preview | ✅ | ✅ | ✅ |
+| Tab Completion | ✅ | ✅ | ✅ |
+| Error Handling | ✅ | ❌ | ❌ |
+| Documentation | ✅ | ❌ | ❌ |
+
+### Bash Versions
 
 | Feature | PRD | Guideline | Original |
 |---------|-----|-----------|----------|

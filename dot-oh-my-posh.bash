@@ -1,4 +1,4 @@
-## Version: v01.09.03
+## Version: v01.10.02
 ## -------- OH-MY-POSH --------
 
 # Verify bash is being used
@@ -30,7 +30,7 @@ done
 
 # Show version if -v flag is provided
 if [[ "$SHOW_VERSION" == "true" ]]; then
-    echo "Version: v01.09.03"
+    echo "Version: v01.10.02"
     return
 fi
 

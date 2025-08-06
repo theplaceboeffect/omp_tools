@@ -2,7 +2,7 @@
 
 ## Overview
 
-Oh My Posh Tools is a command-line interface project that provides enhanced Oh My Posh configuration and theme management tools. The tool offers interactive theme browsing, persistent configuration, and cross-platform support for both zsh and PowerShell environments.
+Oh My Posh Tools is a command-line interface project that provides enhanced Oh My Posh configuration and theme management tools. The tool offers interactive theme browsing, persistent configuration, and cross-platform support for PowerShell, zsh, and bash environments.
 
 ## Core Requirements
 
@@ -98,6 +98,7 @@ Oh My Posh Tools is a command-line interface project that provides enhanced Oh M
 **Requirements:**
 - **Environment Detection:** Automatically detect operating system, shell, and package manager
 - **Installation Path Detection:** Support multiple oh-my-posh installation locations
+- **Shell Support:** Full support for PowerShell, zsh, and bash environments
 - **Package Manager Support:** Detect and support various package managers (Homebrew, winget, Chocolatey, Scoop, apt, yum)
 - **Cross-Platform Paths:** Handle different installation paths for Windows, macOS, and Linux
 - **Environment Information:** Display comprehensive environment information to users

@@ -240,6 +240,48 @@ This document reconstructs the complete development history of the Oh My Posh To
 - Comprehensive environment information display
 - Cross-platform installation path detection
 
+## Commit v01.09.03 - Bash Support
+
+**Date:** Current
+
+**Files:** `dot-oh-my-posh.bash`
+
+**Changes:**
+- Added bash script version for complete shell coverage
+- Implemented all core functions (omp_ls, omp_set, omp_show, omp_help, omp_env, omp_install)
+- Added Windows compatibility features to bash version
+- Enhanced environment detection for bash environment
+- Added comprehensive help documentation
+
+**New Features:**
+- Complete bash support with feature parity to zsh and PowerShell versions
+- Interactive theme browser with j/k navigation
+- Environment information display
+- Installation script functionality
+- Cross-platform compatibility
+
+## Commit v01.10.02 - UX Improvements
+
+**Date:** Current
+
+**Files:** `dot-oh-my-posh.bash`, `dot-oh-my-posh.zsh`, `dot-oh-my-posh.bash.broken`
+
+**Changes:**
+- Enhanced bash script with better help documentation and improved loop syntax
+- Fixed loop syntax in omp_show from `seq 1 $num_themes` to `{1..$num_themes}` for better compatibility
+- Improved theme preview display with proper spacing and universal shell output
+- Updated install path from `.oh-my-posh-tools.bash` to `dot-oh-my-posh.bash` for consistency
+- Removed deprecated `omp()` wrapper function to simplify the interface
+- Added proper spacing around theme preview output in zsh script for better readability
+- Removed broken bash script file (dot-oh-my-posh.bash.broken)
+- Standardized function documentation across all shell variants
+
+**New Features:**
+- Improved cross-platform compatibility and user experience
+- Better visual formatting of interactive theme browser
+- Enhanced function documentation across all shell variants
+- Cleaner codebase with removed deprecated functions
+
 ## Summary of Evolution
 
 The tool evolved from a basic theme switcher to a comprehensive Oh My Posh management system:
@@ -251,5 +293,8 @@ The tool evolved from a basic theme switcher to a comprehensive Oh My Posh manag
 5. **Command Line Support (0a04192):** Added parameter support for initial theme
 6. **Status Reporting (1a8b09c):** Added current/default theme display
 7. **Cross-Platform (d653f2f):** Added PowerShell version and enhanced messaging
+8. **Windows Compatibility (v01.07.00):** Added comprehensive Windows support and environment detection
+9. **Bash Support (v01.09.03):** Added bash script version for complete shell coverage
+10. **UX Improvements (v01.10.02):** Enhanced bash and zsh scripts with better formatting and cleanup
 
-The final version provides a complete Oh My Posh theme management solution with interactive browsing, persistent configuration, and cross-platform support. 
+The final version provides a complete Oh My Posh theme management solution with interactive browsing, persistent configuration, and cross-platform support across PowerShell, zsh, and bash. 
