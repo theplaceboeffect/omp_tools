@@ -1,10 +1,23 @@
 ## Version: v01.10.02
 ## -------- OH-MY-POSH --------
 
+# Ensure we're using a modern bash version
+if (( BASH_VERSINFO[0] < 5 )); then
+    echo "Error: Oh-My-Posh requires Bash 5.x or higher. Detected: $BASH_VERSION"
+    echo "Please upgrade to bash 5.x or use Homebrew bash: brew install bash"
+    return 1
+fi
+
 # Verify bash is being used
 if [[ -z "$BASH_VERSION" ]]; then
     echo "Error: This script requires bash. Current shell: $SHELL"
     echo "Please run this script with bash."
+    return 1
+fi
+
+# Ensure Bash version is at least 5.x
+if (( BASH_VERSINFO[0] < 5 )); then
+    echo "Error: Oh-My-Posh requires Bash 5.x or higher. Detected: $BASH_VERSION"
     return 1
 fi
 

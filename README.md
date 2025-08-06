@@ -61,6 +61,13 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
    source dot-oh-my-posh.bash
    ```
 
+   _macOS users_: install Bash 5.x via Homebrew and run this script with the Homebrew Bash:
+   ```bash
+   brew install bash
+   $(brew --prefix bash)/bin/bash --login
+   source dot-oh-my-posh.bash
+   ```
+
 ## Usage Examples
 
 ```bash
