@@ -121,18 +121,23 @@ zsh tests/test_zsh_omp_envs.sh --verbose
 ```
 
 #### Bash Tests
+**Note:** Tests require bash 5.x+ and may fail with system bash on macOS.
+
 ```bash
+# Use Homebrew bash for testing
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_help.sh
+
 # Quiet mode
-bash tests/test_bash_omp_ls.sh
-bash tests/test_bash_omp_set.sh
-bash tests/test_bash_omp_help.sh
-bash tests/test_bash_omp_envs.sh
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_ls.sh
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_set.sh
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_help.sh
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_envs.sh
 
 # Verbose mode
-bash tests/test_bash_omp_ls.sh --verbose
-bash tests/test_bash_omp_set.sh --verbose
-bash tests/test_bash_omp_help.sh --verbose
-bash tests/test_bash_omp_envs.sh --verbose
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_ls.sh --verbose
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_set.sh --verbose
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_help.sh --verbose
+$(brew --prefix bash)/bin/bash tests/test_bash_omp_envs.sh --verbose
 ```
 
 ## Test Output
@@ -156,7 +161,7 @@ Each test provides:
 
 - **PowerShell 7+** for PowerShell tests
 - **Zsh** for zsh tests
-- **Bash** for bash tests
+- **Bash 5.x+** for bash tests (use Homebrew bash on macOS)
 - **oh-my-posh** installed and accessible
 
 ## Notes
