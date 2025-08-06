@@ -1,8 +1,18 @@
 # Oh My Posh Tools
 
-A command-line interface project with enhanced Oh My Posh configuration and theme management tools.
+A command-line interface project with enhanced Oh My Posh configuration and theme management tools for PowerShell, zsh, and bash.
 
 ## Features
+
+### Windows Compatibility
+
+This project includes comprehensive Windows compatibility features:
+
+- **Environment Detection**: Automatically detects operating system, shell, and package manager
+- **Cross-Platform Support**: Works on Windows, macOS, and Linux
+- **Package Manager Detection**: Supports Homebrew, winget, Chocolatey, Scoop, apt, and yum
+- **Installation Path Detection**: Automatically finds oh-my-posh installation in common locations
+- **Environment Information**: Displays comprehensive environment information to users
 
 ### Oh My Posh Theme Management
 
@@ -34,6 +44,7 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
 ## Installation
 
 1. Clone this repository
+<<<<<<< HEAD
 2. Run the installation command for your shell:
 
 ### For Zsh Users
@@ -49,6 +60,24 @@ omp_install
 ```
 
 The installation script will automatically detect your shell and provide the appropriate setup instructions.
+=======
+2. Source the appropriate configuration file in your shell:
+
+   **For Zsh:**
+   ```bash
+   source dot-oh-my-posh.zsh
+   ```
+>>>>>>> v01.10.02--bash-removed
+
+   **For PowerShell:**
+   ```powershell
+   . dot-oh-my-posh.ps1
+   ```
+
+   **For Bash:**
+   ```bash
+   source dot-oh-my-posh.bash
+   ```
 
 ## Usage Examples
 
@@ -78,8 +107,13 @@ The default theme is stored in `~/.config/omp_tools/default` and defaults to "nu
 
 ## Requirements
 
+<<<<<<< HEAD
 - Oh My Posh installed via Homebrew
 - Zsh shell (for zsh users) or PowerShell (for PowerShell users)
+=======
+- Oh My Posh installed (via Homebrew, winget, Chocolatey, Scoop, apt, or yum)
+- PowerShell 7+ (for PowerShell version), zsh (for zsh version), or bash (for bash version)
+>>>>>>> v01.10.02--bash-removed
 - GitHub CLI (for repository management)
 
 ## License
