@@ -2,6 +2,12 @@
 
 A command-line interface project with enhanced Oh My Posh configuration and theme management tools for PowerShell, zsh, and bash.
 
+[![Version](https://img.shields.io/badge/version-v01.10.02-blue.svg)](https://github.com/your-repo/oh-my-posh-tools)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Shell Support](https://img.shields.io/badge/shell-PowerShell%20%7C%20Zsh%20%7C%20Bash-orange.svg)](https://ohmyposh.dev/)
+
+> **Quick Start**: Clone the repo and source the appropriate script for your shell. See [Installation](#installation) for detailed instructions.
+
 ## Features
 
 ### Windows Compatibility
@@ -53,8 +59,21 @@ This project includes a comprehensive set of functions for managing Oh My Posh t
 
 ## Installation
 
-1. Clone this repository
-2. Source the appropriate configuration file in your shell:
+### Prerequisites
+
+Before installing, ensure you have:
+- [Oh My Posh](https://ohmyposh.dev/docs/installation) installed on your system
+- The appropriate shell version (see [Requirements](#requirements))
+
+### Quick Installation
+
+1. **Clone this repository**
+   ```bash
+   git clone https://github.com/your-repo/oh-my-posh-tools.git
+   cd oh-my-posh-tools
+   ```
+
+2. **Source the appropriate configuration file for your shell:**
 
 ### For Zsh Users
 ```bash
@@ -90,6 +109,21 @@ omp_install
 brew install bash
 $(brew --prefix bash)/bin/bash --login
 source dot-oh-my-posh.bash
+```
+
+### Verification
+
+After sourcing the script, verify the installation:
+
+```bash
+# Check if functions are available
+omp_help
+
+# Show environment information
+omp_env
+
+# List available themes
+omp_ls
 ```
 
 The installation script will automatically detect your shell and provide the appropriate setup instructions.
@@ -166,7 +200,32 @@ omp_help
 
 ## Configuration
 
+### Default Theme
 The default theme is stored in `~/.config/omp_tools/default` and defaults to "nu4a" if not set.
+
+### Customization
+You can customize the default theme by:
+
+```bash
+# Set a new default theme
+omp_set your-theme-name
+
+# Or manually edit the config file
+echo "your-theme-name" > ~/.config/omp_tools/default
+```
+
+### Profile Integration
+For permanent installation, use the `omp_install` function:
+
+```bash
+# Install to home directory
+omp_install
+
+# Add to your shell profile (examples)
+echo "source ~/dot-oh-my-posh.bash" >> ~/.bashrc    # Bash
+echo "source ~/dot-oh-my-posh.zsh" >> ~/.zshrc      # Zsh
+# For PowerShell, add to your profile
+```
 
 ## Requirements
 
@@ -176,9 +235,26 @@ The default theme is stored in `~/.config/omp_tools/default` and defaults to "nu
 - **For Bash**: Bash 5.x+ (required - install via `brew install bash` on macOS/Linux)
 - GitHub CLI (for repository management)
 
+## Testing
+
+The project includes a comprehensive test suite. See [tests/README.md](tests/README.md) for detailed testing instructions.
+
+```bash
+# Run all tests
+./tests/run_all_tests.sh
+
+# Run tests with verbose output
+./tests/run_all_tests.sh --verbose
+
+# Run individual shell tests
+bash tests/test_bash_omp_help.sh --verbose
+zsh tests/test_zsh_omp_help.sh --verbose
+pwsh -ExecutionPolicy Bypass -File tests/test_ps1_omp_help.ps1 -Verbose
+```
+
 ## Troubleshooting
 
-### Bash Version Issues
+### Common Issues
 If you see "Error: Oh-My-Posh requires Bash 5.x or higher":
 ```bash
 # Check current bash version
@@ -205,6 +281,32 @@ source dot-oh-my-posh.bash
 declare -f omp_help
 ```
 
+### Oh My Posh Not Found
+If you see "oh-my-posh: command not found":
+```bash
+# Install Oh My Posh (macOS)
+brew install oh-my-posh
+
+# Install Oh My Posh (Windows)
+winget install JanDeDobbeleer.OhMyPosh
+
+# Install Oh My Posh (Linux)
+# See https://ohmyposh.dev/docs/installation
+```
+
+### Theme Not Found
+If you see "theme not found" errors:
+```bash
+# List available themes
+omp_ls
+
+# Check theme directory
+ls $(brew --prefix oh-my-posh)/themes/
+
+# Set a known theme
+omp_set nu4a
+```
+
 ### Version Requirements
 
 #### Bash Version Check
@@ -215,6 +317,35 @@ The script automatically checks for bash 5.x+ compatibility:
 
 The version check prevents compatibility issues with older bash versions.
 
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+1. Clone the repository
+2. Install dependencies
+3. Run tests to ensure everything works
+4. Make your changes
+5. Submit a pull request
+
+### Testing Your Changes
+
+```bash
+# Run the test suite
+./tests/run_all_tests.sh --verbose
+
+# Test specific shell functionality
+bash -c "source dot-oh-my-posh.bash && omp_help"
+zsh -c "source dot-oh-my-posh.zsh && omp_help"
+pwsh -ExecutionPolicy Bypass -Command ". dot-oh-my-posh.ps1; omp_help"
+```
+
 ## License
 
-[Add your license here] 
+[Add your license here]
+
+## Acknowledgments
+
+- [Oh My Posh](https://ohmyposh.dev/) for the amazing prompt engine
+- The open source community for inspiration and feedback 

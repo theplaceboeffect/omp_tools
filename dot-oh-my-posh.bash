@@ -352,7 +352,7 @@ omp_install() {
         echo "✓ Script installed to: $install_path"
         echo ""
         echo "To use permanently, add this line to your bash profile:"
-        echo "  . ~/dot-oh-my-posh.bash"
+        echo "  . ~/dot-oh-my-posh-tools.bash"
         echo ""
         echo "To find your profile location, run:"
         echo "  echo \$HOME/.bashrc"

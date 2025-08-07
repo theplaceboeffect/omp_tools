@@ -576,7 +576,6 @@ function _omp_completion {
 Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 
-<<<<<<< HEAD
 function omp_install {
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
     $homeDir = $env:USERPROFILE
@@ -604,20 +603,8 @@ function omp_install {
     }
 }
 
-# Initialize oh-my-posh with default theme
-$initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
-Invoke-Expression $initCmd 
-=======
 # Initialize oh-my-posh with default theme (only if no flags provided)
 if (-not $h -and -not $e -and -not $v) {
     $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
     Invoke-Expression $initCmd
-} 
-
-
-
-
-
-
-
->>>>>>> v01.10.02--bash-removed
+}
