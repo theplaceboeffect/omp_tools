@@ -35,4 +35,13 @@ else
     echo "✗ dot-oh-my-posh.zsh not found"
 fi
 
+# Update bash script
+if [[ -f "dot-oh-my-posh.bash" ]]; then
+    sed -i '' "s/## Version: v[0-9]\+\.[0-9]\+\.[0-9]\+/## Version: $VERSION/" dot-oh-my-posh.bash
+    sed -i '' "s/echo \"Version: v[0-9]\+\.[0-9]\+\.[0-9]\+\"/echo \"Version: $VERSION\"/" dot-oh-my-posh.bash
+    echo "✓ Updated dot-oh-my-posh.bash"
+else
+    echo "✗ dot-oh-my-posh.bash not found"
+fi
+
 echo "Version update complete!" 

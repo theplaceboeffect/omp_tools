@@ -1,4 +1,4 @@
-## Version: v01.10.02
+## Version: v01.11.02
 ## -------- OH-MY-POSH --------
 
 # Parse command-line arguments

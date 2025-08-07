@@ -44,11 +44,21 @@ run_test() {
         else
             # Run shell test
             if [[ "$test_file" == *bash* ]]; then
-                # Use bash for bash tests
-                if [[ "$VERBOSE" == "true" ]]; then
-                    bash "$test_file" --verbose
+                # Use Homebrew bash for bash tests
+                BREW_BASH="$(brew --prefix bash)/bin/bash"
+                if [[ -x "$BREW_BASH" ]]; then
+                    if [[ "$VERBOSE" == "true" ]]; then
+                        "$BREW_BASH" "$test_file" --verbose
+                    else
+                        "$BREW_BASH" "$test_file"
+                    fi
                 else
-                    bash "$test_file"
+                    # Fallback to system bash
+                    if [[ "$VERBOSE" == "true" ]]; then
+                        bash "$test_file" --verbose
+                    else
+                        bash "$test_file"
+                    fi
                 fi
             else
                 # Use zsh for zsh tests

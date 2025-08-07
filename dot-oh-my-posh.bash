@@ -1,24 +1,26 @@
-## Version: v01.10.02
+## Version: v01.11.02
 ## -------- OH-MY-POSH --------
 
 # Ensure we're using a modern bash version
-if (( BASH_VERSINFO[0] < 5 )); then
-    echo "Error: Oh-My-Posh requires Bash 5.x or higher. Detected: $BASH_VERSION"
-    echo "Please upgrade to bash 5.x or use Homebrew bash: brew install bash"
-    return 1
-fi
-
-# Verify bash is being used
 if [[ -z "$BASH_VERSION" ]]; then
     echo "Error: This script requires bash. Current shell: $SHELL"
     echo "Please run this script with bash."
-    return 1
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return 1
+    else
+        exit 1
+    fi
 fi
 
-# Ensure Bash version is at least 5.x
-if (( BASH_VERSINFO[0] < 5 )); then
+# Check bash version only if BASH_VERSINFO is available
+if [[ -n "$BASH_VERSINFO" ]] && (( BASH_VERSINFO[0] < 5 )); then
     echo "Error: Oh-My-Posh requires Bash 5.x or higher. Detected: $BASH_VERSION"
-    return 1
+    echo "Please upgrade to bash 5.x or use Homebrew bash: brew install bash"
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return 1
+    else
+        exit 1
+    fi
 fi
 
 # Parse command-line arguments
@@ -44,7 +46,11 @@ done
 # Show version if -v flag is provided
 if [[ "$SHOW_VERSION" == "true" ]]; then
     echo "Version: v01.10.02"
-    return
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return
+    else
+        exit 0
+    fi
 fi
 
 # Show help if -h flag is provided
@@ -77,7 +83,26 @@ if [[ "$SHOW_HELP" == "true" ]]; then
     echo "  omp_env                       # Show environment info"
     echo "  omp_install                   # Install script permanently"
     echo "==============================="
-    return
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return
+    else
+        exit 0
+    fi
+fi
+
+# Show environment information only if -e flag is provided
+if [[ "$SHOW_ENV" == "true" ]]; then
+    echo "=== OH-MY-POSH ENVIRONMENT ==="
+    echo "Operating System: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f1 | cut -d':' -f2)"
+    echo "Shell: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f2 | cut -d':' -f2)"
+    echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"
+    echo "Package Manager: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f4 | cut -d':' -f2)"
+    echo "==============================="
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return
+    else
+        exit 0
+    fi
 fi
 
 # Environment Detection for Windows Compatibility
@@ -163,7 +188,11 @@ if [[ "$SHOW_ENV" == "true" ]]; then
     echo "oh-my-posh Install Dir: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f3 | cut -d':' -f2)"
     echo "Package Manager: $(echo "$OMP_ENVIRONMENT" | cut -d'|' -f4 | cut -d':' -f2)"
     echo "==============================="
-    return
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return
+    else
+        exit 0
+    fi
 fi
 
 DEFAULT_OMP_THEME=$(cat ~/.config/omp_tools/default 2>/dev/null || echo "nu4a")
@@ -177,7 +206,9 @@ else
     OMP_THEMES="$(brew --prefix oh-my-posh)/themes"
 fi
 
-alias omp_ls="ls $OMP_THEMES"
+function omp_ls() {
+    ls "$OMP_THEMES"
+}
 
 function omp_set() {
     if [[ -z "$1" ]]; then
