@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test for omp_set function in bash script
 # This test verifies that omp_set shows current and default themes
 
@@ -15,6 +15,17 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Ensure we're using the correct bash version
+if [[ -n "$(brew --prefix bash 2>/dev/null)" ]]; then
+    BREW_BASH="$(brew --prefix bash)/bin/bash"
+    if [[ -x "$BREW_BASH" ]]; then
+        # Re-execute with Homebrew bash if we're not already using it
+        if [[ "$BASH_VERSION" != "5."* ]]; then
+            exec "$BREW_BASH" "$0" "$@"
+        fi
+    fi
+fi
 
 # Load the script
 source ./dot-oh-my-posh.bash
