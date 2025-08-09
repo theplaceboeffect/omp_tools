@@ -46,11 +46,11 @@ if ($output -and $output.Trim().Length -gt 0) {
         Write-Host "First 10 lines of omp_ls output:" -ForegroundColor Cyan
         $output -split "`n" | Select-Object -First 10 | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
     }
-    Write-Host "PASS: omp_ls" -ForegroundColor Green
+    Write-Host "PASS: omp_ls (powershell)" -ForegroundColor Green
 } else {
     if ($Verbose) {
         Write-Host "✗ omp_ls returned no output" -ForegroundColor Red
     }
-    Write-Host "FAIL: omp_ls" -ForegroundColor Red
+    Write-Host "FAIL: omp_ls (powershell)" -ForegroundColor Red
     exit 1
 } 

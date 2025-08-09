@@ -55,7 +55,7 @@ if [[ -n "$output" ]]; then
                 echo "  $line"
             done
         fi
-        echo "PASS: omp_help"
+        echo "PASS: omp_help (zsh)"
     else
         if [[ "$VERBOSE" == "true" ]]; then
             echo "✓ omp_help returned output"
@@ -90,13 +90,13 @@ if [[ -n "$output" ]]; then
                 echo "  $line"
             done
         fi
-        echo "FAIL: omp_help"
+        echo "FAIL: omp_help (zsh)"
         exit 1
     fi
 else
     if [[ "$VERBOSE" == "true" ]]; then
         echo "✗ omp_help returned no output"
     fi
-    echo "FAIL: omp_help"
+    echo "FAIL: omp_help (zsh)"
     exit 1
 fi 

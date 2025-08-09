@@ -45,7 +45,7 @@ if ($output -and $output.Trim().Length -gt 0) {
             Write-Host "omp_set output:" -ForegroundColor Cyan
             $output -split "`n" | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
-        Write-Host "PASS: omp_set" -ForegroundColor Green
+        Write-Host "PASS: omp_set (powershell)" -ForegroundColor Green
     } else {
         if ($Verbose) {
             Write-Host "✓ omp_set returned output" -ForegroundColor Green
@@ -66,13 +66,13 @@ if ($output -and $output.Trim().Length -gt 0) {
             Write-Host "omp_set output:" -ForegroundColor Cyan
             $output -split "`n" | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
-        Write-Host "FAIL: omp_set" -ForegroundColor Red
+        Write-Host "FAIL: omp_set (powershell)" -ForegroundColor Red
         exit 1
     }
 } else {
     if ($Verbose) {
         Write-Host "✗ omp_set returned no output" -ForegroundColor Red
     }
-    Write-Host "FAIL: omp_set" -ForegroundColor Red
+    Write-Host "FAIL: omp_set (powershell)" -ForegroundColor Red
     exit 1
 } 

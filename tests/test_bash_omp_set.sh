@@ -60,7 +60,7 @@ if [[ -n "$output" ]]; then
                 echo "  $line"
             done
         fi
-        echo "PASS: omp_set"
+        echo "PASS: omp_set (bash)"
     else
         if [[ "$VERBOSE" == "true" ]]; then
             echo "✓ omp_set returned output"
@@ -83,13 +83,13 @@ if [[ -n "$output" ]]; then
                 echo "  $line"
             done
         fi
-        echo "FAIL: omp_set"
+        echo "FAIL: omp_set (bash)"
         exit 1
     fi
 else
     if [[ "$VERBOSE" == "true" ]]; then
         echo "✗ omp_set returned no output"
     fi
-    echo "FAIL: omp_set"
+    echo "FAIL: omp_set (bash)"
     exit 1
 fi 

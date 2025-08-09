@@ -66,7 +66,7 @@ if [[ -n "$output" ]]; then
                 echo "  $line"
             done
         fi
-        echo "PASS: omp_env"
+        echo "PASS: omp_env (bash)"
     else
         if [[ "$VERBOSE" == "true" ]]; then
             echo "✓ omp_env returned output"
@@ -101,13 +101,13 @@ if [[ -n "$output" ]]; then
                 echo "  $line"
             done
         fi
-        echo "FAIL: omp_env"
+        echo "FAIL: omp_env (bash)"
         exit 1
     fi
 else
     if [[ "$VERBOSE" == "true" ]]; then
         echo "✗ omp_env returned no output"
     fi
-    echo "FAIL: omp_env"
+    echo "FAIL: omp_env (bash)"
     exit 1
 fi 

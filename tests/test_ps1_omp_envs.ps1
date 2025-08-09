@@ -51,7 +51,7 @@ if ($output -and $output.Trim().Length -gt 0) {
             Write-Host "omp_env output:" -ForegroundColor Cyan
             $output -split "`n" | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
-        Write-Host "PASS: omp_env" -ForegroundColor Green
+        Write-Host "PASS: omp_env (powershell)" -ForegroundColor Green
     } else {
         if ($Verbose) {
             Write-Host "✓ omp_env returned output" -ForegroundColor Green
@@ -84,13 +84,13 @@ if ($output -and $output.Trim().Length -gt 0) {
             Write-Host "omp_env output:" -ForegroundColor Cyan
             $output -split "`n" | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
-        Write-Host "FAIL: omp_env" -ForegroundColor Red
+        Write-Host "FAIL: omp_env (powershell)" -ForegroundColor Red
         exit 1
     }
 } else {
     if ($Verbose) {
         Write-Host "✗ omp_env returned no output" -ForegroundColor Red
     }
-    Write-Host "FAIL: omp_env" -ForegroundColor Red
+    Write-Host "FAIL: omp_env (powershell)" -ForegroundColor Red
     exit 1
 } 

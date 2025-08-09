@@ -2,7 +2,7 @@
 
 A command-line interface project with enhanced Oh My Posh configuration and theme management tools for PowerShell, zsh, and bash.
 
-[![Version](https://img.shields.io/badge/version-v01.12.01-blue.svg)](https://github.com/your-repo/oh-my-posh-tools)
+[![Version](https://img.shields.io/badge/version-v01.12.03-blue.svg)](https://github.com/your-repo/oh-my-posh-tools)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Shell Support](https://img.shields.io/badge/shell-PowerShell%20%7C%20Zsh%20%7C%20Bash-orange.svg)](https://ohmyposh.dev/)
 

@@ -51,7 +51,7 @@ if ($output -and $output.Trim().Length -gt 0) {
             Write-Host "omp_help output:" -ForegroundColor Cyan
             $output -split "`n" | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
-        Write-Host "PASS: omp_help" -ForegroundColor Green
+        Write-Host "PASS: omp_help (powershell)" -ForegroundColor Green
     } else {
         if ($Verbose) {
             Write-Host "✓ omp_help returned output" -ForegroundColor Green
@@ -84,13 +84,13 @@ if ($output -and $output.Trim().Length -gt 0) {
             Write-Host "omp_help output:" -ForegroundColor Cyan
             $output -split "`n" | ForEach-Object { Write-Host "  $_" -ForegroundColor White }
         }
-        Write-Host "FAIL: omp_help" -ForegroundColor Red
+        Write-Host "FAIL: omp_help (powershell)" -ForegroundColor Red
         exit 1
     }
 } else {
     if ($Verbose) {
         Write-Host "✗ omp_help returned no output" -ForegroundColor Red
     }
-    Write-Host "FAIL: omp_help" -ForegroundColor Red
+    Write-Host "FAIL: omp_help (powershell)" -ForegroundColor Red
     exit 1
 } 

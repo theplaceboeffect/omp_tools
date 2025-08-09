@@ -62,7 +62,7 @@ omp_help() {
 
 # Show version if -v flag is provided
 if [[ "$SHOW_VERSION" == "true" ]]; then
-    echo "Version: v01.10.02"
+    echo "Version: v01.11.02"
     return
 fi
 
@@ -169,7 +169,13 @@ else
     OMP_THEMES="$(brew --prefix oh-my-posh)/themes"
 fi
 
-alias omp_ls="ls $OMP_THEMES"
+function omp_ls() {
+    if [[ ! -d "$OMP_THEMES" ]]; then
+        echo "Error: Themes directory not found: $OMP_THEMES"
+        return 1
+    fi
+    ls "$OMP_THEMES"
+}
 
 function omp_set() {
     if [[ -z "$1" ]]; then
@@ -184,17 +190,56 @@ function omp_set() {
         return
     fi
     
+    # Check if theme file exists
+    local theme_file="$OMP_THEMES/$1.omp.json"
+    if [[ ! -f "$theme_file" ]]; then
+        echo "Error: Theme '$1' not found at $theme_file"
+        echo "Use 'omp_ls' to see available themes"
+        return 1
+    fi
+    
+    # Check if oh-my-posh command is available
+    if ! command -v oh-my-posh >/dev/null 2>&1; then
+        echo "Error: oh-my-posh command not found"
+        echo "Please install oh-my-posh first"
+        return 1
+    fi
+    
     echo "Setting theme to $1"
     local theme_cmd
-    theme_cmd="$(oh-my-posh init zsh --config "$OMP_THEMES/$1.omp.json")"
-    eval "$theme_cmd"
+    if theme_cmd="$(oh-my-posh init zsh --config "$theme_file" 2>/dev/null)"; then
+        eval "$theme_cmd"
+    else
+        echo "Error: Failed to initialize theme '$1'"
+        return 1
+    fi
 }
 
 function omp_show() {
+    # Check if oh-my-posh command is available
+    if ! command -v oh-my-posh >/dev/null 2>&1; then
+        echo "Error: oh-my-posh command not found"
+        echo "Please install oh-my-posh first"
+        return 1
+    fi
+    
+    # Check if themes directory exists
+    if [[ ! -d "$OMP_THEMES" ]]; then
+        echo "Error: Themes directory not found: $OMP_THEMES"
+        return 1
+    fi
+    
     # Get a list of all theme files
     local themes=("$OMP_THEMES"/*.omp.json)
     local num_themes=${#themes[@]}
-    local current_index=1
+    
+    # Check if any themes were found
+    if [[ $num_themes -eq 0 ]] || [[ ! -f "${themes[1]}" ]]; then
+        echo "Error: No theme files found in $OMP_THEMES"
+        return 1
+    fi
+    
+    local current_index=0
 
     # Get the current theme name from the POSH_THEME env var
     local current_theme_name
@@ -204,16 +249,16 @@ function omp_show() {
     if [[ -n "$1" ]]; then
         local specified_theme="$1"
         # Find the index of the specified theme
-        for i in {1..$num_themes}; do
-            if [[ "$(basename "${themes[$i]}" .omp.json)" == "$specified_theme" ]]; then
+        for (( i=0; i<num_themes; i++ )); do
+            if [[ "$(basename "${themes[$((i+1))]}" .omp.json)" == "$specified_theme" ]]; then
                 current_index=$i
                 break
             fi
         done
     else
         # Find the index of the current theme
-        for i in {1..$num_themes}; do
-            if [[ "$(basename "${themes[$i]}" .omp.json)" == "$current_theme_name" ]]; then
+        for (( i=0; i<num_themes; i++ )); do
+            if [[ "$(basename "${themes[$((i+1))]}" .omp.json)" == "$current_theme_name" ]]; then
                 current_index=$i
                 break
             fi
@@ -229,7 +274,7 @@ function omp_show() {
     # Function to display the current theme
     display_theme() {
         tput clear
-        local theme_file=${themes[$current_index]}
+        local theme_file=${themes[$((current_index+1))]}
         local theme_name
         theme_name=$(basename "$theme_file" .omp.json)
         
@@ -273,20 +318,20 @@ function omp_show() {
         case "$key" in
             'k') # Up
                 current_index=$((current_index - 1))
-                if [[ $current_index -lt 1 ]]; then
-                    current_index=$num_themes
+                if [[ $current_index -lt 0 ]]; then
+                    current_index=$((num_themes - 1))
                 fi
                 ;;
             'j') # Down
                 current_index=$((current_index + 1))
-                if [[ $current_index -gt $num_themes ]]; then
-                    current_index=1
+                if [[ $current_index -ge $num_themes ]]; then
+                    current_index=0
                 fi
                 ;;
             $'\n') # Enter
                 tput clear
                 local selected_theme
-                selected_theme=$(basename "${themes[$current_index]}" .omp.json)
+                selected_theme=$(basename "${themes[$((current_index+1))]}" .omp.json)
                 omp_set "$selected_theme"
                 echo "Theme set to $selected_theme"
                 
@@ -301,7 +346,7 @@ function omp_show() {
             's') # Set as default
                 tput clear
                 local selected_theme
-                selected_theme=$(basename "${themes[$current_index]}" .omp.json)
+                selected_theme=$(basename "${themes[$((current_index+1))]}" .omp.json)
                 mkdir -p ~/.config/omp_tools
                 echo "$selected_theme" > ~/.config/omp_tools/default
                 omp_set "$selected_theme"
@@ -361,7 +406,7 @@ omp_install() {
         echo "  . ~/.oh-my-posh-tools.zsh"
         echo ""
         echo "To find your profile location, run:"
-        echo "  echo \$ZDOTDIR/.zshrc"
+        echo "  echo \${ZDOTDIR:-\$HOME}/.zshrc"
     else
         echo "Error installing script"
         return 1
@@ -379,8 +424,6 @@ omp_env() {
     echo "Package Manager: $(echo "$env_info" | cut -d'|' -f4 | cut -d':' -f2)"
     echo "==============================="
 }
-
-# Help function (moved earlier)
 
 # Main omp function that acts as a wrapper for all individual functions
 omp() {
@@ -440,13 +483,14 @@ compdef _omp_set_completion omp_show
 
 # Initialize oh-my-posh with default theme (only if no flags provided)
 if [[ "$SHOW_HELP" != "true" && "$SHOW_ENV" != "true" && "$SHOW_VERSION" != "true" ]]; then
-    eval "$(oh-my-posh init zsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json")"
+    if command -v oh-my-posh >/dev/null 2>&1; then
+        local theme_file="$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
+        if [[ -f "$theme_file" ]]; then
+            eval "$(oh-my-posh init zsh --config "$theme_file")"
+        else
+            echo "Warning: Default theme '$DEFAULT_OMP_THEME' not found at $theme_file"
+        fi
+    else
+        echo "Warning: oh-my-posh command not found. Please install oh-my-posh to use themes."
+    fi
 fi
-
-
-
-
-
-
-
-

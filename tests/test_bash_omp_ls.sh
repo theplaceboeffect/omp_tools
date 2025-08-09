@@ -63,11 +63,11 @@ if [[ -n "$output" ]]; then
             echo "  $line"
         done
     fi
-    echo "PASS: omp_ls"
+    echo "PASS: omp_ls (bash)"
 else
     if [[ "$VERBOSE" == "true" ]]; then
         echo "✗ omp_ls returned no output"
     fi
-    echo "FAIL: omp_ls"
+    echo "FAIL: omp_ls (bash)"
     exit 1
 fi 
