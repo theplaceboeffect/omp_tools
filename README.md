@@ -2,7 +2,7 @@
 
 A command-line interface project with enhanced Oh My Posh configuration and theme management tools for PowerShell, zsh, and bash.
 
-[![Version](https://img.shields.io/badge/version-v01.10.02-blue.svg)](https://github.com/your-repo/oh-my-posh-tools)
+[![Version](https://img.shields.io/badge/version-v01.11.03-blue.svg)](https://github.com/your-repo/oh-my-posh-tools)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Shell Support](https://img.shields.io/badge/shell-PowerShell%20%7C%20Zsh%20%7C%20Bash-orange.svg)](https://ohmyposh.dev/)
 
@@ -143,6 +143,8 @@ source dot-oh-my-posh.bash -e
 source dot-oh-my-posh.bash -v
 ```
 
+Note: `-h` is a shortcut for `omp_help` in all shells and prints the same, single help output including installation information.
+
 ## Usage Examples
 
 ### Basic Theme Management
@@ -231,6 +233,7 @@ echo "source ~/dot-oh-my-posh.zsh" >> ~/.zshrc      # Zsh
 
 - Oh My Posh installed (via Homebrew, winget, Chocolatey, Scoop, apt, or yum)
 - **For PowerShell**: PowerShell 7+ (cross-platform)
+  - The PowerShell script aborts when not run under PowerShell 7+ (Windows PowerShell 5.x is not supported)
 - **For Zsh**: Zsh shell (macOS default, available on Linux/Windows)
 - **For Bash**: Bash 5.x+ (required - install via `brew install bash` on macOS/Linux)
 - GitHub CLI (for repository management)
