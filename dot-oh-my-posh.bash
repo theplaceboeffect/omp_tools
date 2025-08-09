@@ -43,18 +43,8 @@ for arg in "$@"; do
     esac
 done
 
-# Show version if -v flag is provided
-if [[ "$SHOW_VERSION" == "true" ]]; then
-    echo "Version: v01.10.02"
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        return
-    else
-        exit 0
-    fi
-fi
-
-# Show help if -h flag is provided
-if [[ "$SHOW_HELP" == "true" ]]; then
+# Help function (single source of truth)
+omp_help() {
     echo "=== OH-MY-POSH TOOLS HELP ==="
     echo "Usage: . dot-oh-my-posh.bash [-h] [-e] [-v]"
     echo ""
@@ -83,6 +73,21 @@ if [[ "$SHOW_HELP" == "true" ]]; then
     echo "  omp_env                       # Show environment info"
     echo "  omp_install                   # Install script permanently"
     echo "==============================="
+}
+
+# Show version if -v flag is provided
+if [[ "$SHOW_VERSION" == "true" ]]; then
+    echo "Version: v01.10.02"
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+        return
+    else
+        exit 0
+    fi
+fi
+
+# Show help if -h flag is provided (single source of truth via omp_help)
+if [[ "$SHOW_HELP" == "true" ]]; then
+    omp_help
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         return
     else
@@ -405,37 +410,7 @@ omp_env() {
     echo "==============================="
 }
 
-# Help function
-omp_help() {
-    echo "=== OH-MY-POSH TOOLS HELP ==="
-    echo "Usage: . dot-oh-my-posh.bash [-h] [-e] [-v]"
-    echo ""
-    echo "Options:"
-    echo "  -h    Show this help message"
-    echo "  -e    Show environment information only"
-    echo "  -v    Show version information"
-    echo ""
-    echo "Functions:"
-    echo "  omp_ls    List available themes"
-    echo "  omp_set   Set theme (use without args to see current/default)"
-    echo "  omp_show  Interactive theme browser"
-    echo "  omp_help  Show this help message"
-    echo "  omp_env   Show environment information"
-    echo "  omp_install Install script to home directory"
-    echo ""
-    echo "Examples:"
-    echo "  . dot-oh-my-posh.bash         # Load with default theme"
-    echo "  . dot-oh-my-posh.bash -e      # Show environment info only"
-    echo "  . dot-oh-my-posh.bash -h      # Show this help"
-    echo "  . dot-oh-my-posh.bash -v      # Show version"
-    echo "  omp_ls                        # List themes"
-    echo "  omp_set nu4a                  # Set theme to nu4a"
-    echo "  omp_show                      # Interactive theme browser"
-    echo "  omp_help                      # Show this help"
-    echo "  omp_env                       # Show environment info"
-    echo "  omp_install                   # Install script permanently"
-    echo "==============================="
-}
+# Help function (moved earlier)
 
 # Initialize oh-my-posh with default theme (only if no flags provided)
 if [[ "$SHOW_HELP" != "true" && "$SHOW_ENV" != "true" && "$SHOW_VERSION" != "true" ]]; then

@@ -1,3 +1,4 @@
+
 ## Version: v01.11.02
 ## -------- OH-MY-POSH --------
 
@@ -21,30 +22,9 @@ if ($v) {
     return
 }
 
-# Show help if -h flag is provided
+# Show help if -h flag is provided (single source of truth via omp_help)
 if ($h) {
-    Write-Host "=== OH-MY-POSH TOOLS HELP ===" -ForegroundColor Cyan
-    Write-Host "Usage: . dot-oh-my-posh.ps1 [-h] [-e] [-v]" -ForegroundColor Yellow
-    Write-Host "" -ForegroundColor White
-    Write-Host "Options:" -ForegroundColor Yellow
-    Write-Host "  -h    Show this help message" -ForegroundColor White
-    Write-Host "  -e    Show environment information only" -ForegroundColor White
-    Write-Host "  -v    Show version information" -ForegroundColor White
-    Write-Host "" -ForegroundColor White
-    Write-Host "Functions:" -ForegroundColor Yellow
-    Write-Host "  omp_ls    List available themes" -ForegroundColor White
-    Write-Host "  omp_set   Set theme (use without args to see current/default)" -ForegroundColor White
-    Write-Host "  omp_show  Interactive theme browser" -ForegroundColor White
-    Write-Host "" -ForegroundColor White
-    Write-Host "Examples:" -ForegroundColor Yellow
-    Write-Host "  . dot-oh-my-posh.ps1          # Load with default theme" -ForegroundColor White
-    Write-Host "  . dot-oh-my-posh.ps1 -e       # Show environment info only" -ForegroundColor White
-    Write-Host "  . dot-oh-my-posh.ps1 -h       # Show this help" -ForegroundColor White
-    Write-Host "  . dot-oh-my-posh.ps1 -v       # Show version" -ForegroundColor White
-    Write-Host "  omp_ls                        # List themes" -ForegroundColor White
-    Write-Host "  omp_set nu4a                  # Set theme to nu4a" -ForegroundColor White
-    Write-Host "  omp_show                      # Interactive theme browser" -ForegroundColor White
-    Write-Host "===============================" -ForegroundColor Cyan
+    omp_help
     return
 }
 
