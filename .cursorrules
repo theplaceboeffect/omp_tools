@@ -1,3 +1,13 @@
+## ALWAYS
+
+- Update `README.md`.
+- Mark tasks as complete when done.
+- Run a PowerShell 5 syntax check:
+  ```powershell
+  powershell.exe -ExecutionPolicy Bypass -Command ". .\dot-oh-my-posh.ps1 -v"
+  ```
+- Update the git commit message in the working prompt.
+
 # Cursor Rules for oh-my-posh-tools
 
 ## Version Management
