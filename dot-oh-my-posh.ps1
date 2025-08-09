@@ -18,7 +18,7 @@ if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt
 
 # Show version if -v flag is provided
 if ($v) {
-    Write-Host "Version: v01.10.02" -ForegroundColor Green
+    Write-Host "Version: v01.12.01" -ForegroundColor Green
     return
 }
 
@@ -39,13 +39,16 @@ function Get-OMPEnvironment {
         PackageManager = $null
     }
     
-    # Determine Operating System
-    if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    # Determine Operating System (PowerShell 5 compatible)
+    if ($env:OS -eq "Windows_NT" -or [System.Environment]::OSVersion.Platform -eq "Win32NT") {
         $envInfo.OperatingSystem = "Windows"
-    } elseif ($IsMacOS) {
-        $envInfo.OperatingSystem = "macOS"
-    } elseif ($IsLinux) {
-        $envInfo.OperatingSystem = "Linux"
+    } elseif ([System.Environment]::OSVersion.Platform -eq "Unix") {
+        # Distinguish between macOS and Linux
+        if (Test-Path "/System/Library/CoreServices/SystemVersion.plist") {
+            $envInfo.OperatingSystem = "macOS"
+        } else {
+            $envInfo.OperatingSystem = "Linux"
+        }
     } else {
         $envInfo.OperatingSystem = "Unknown"
     }
@@ -412,33 +415,6 @@ function omp_show {
     }
 }
 
-# Install function
-function omp_install {
-    $scriptPath = "."
-    $scriptFile = Join-Path $scriptPath "dot-oh-my-posh.ps1"
-    $homeDir = $HOME
-    $installPath = Join-Path $homeDir ".oh-my-posh-tools.ps1"
-    
-    if (-not (Test-Path $scriptFile)) {
-        Write-Host "Error: Script not found at expected location: $scriptFile" -ForegroundColor Red
-        return
-    }
-    
-    try {
-        Copy-Item $scriptFile $installPath -Force
-        Write-Host "✓ Script installed to: $installPath" -ForegroundColor Green
-        Write-Host "" -ForegroundColor White
-        Write-Host "To use permanently, add this line to your PowerShell profile:" -ForegroundColor Yellow
-        Write-Host "  . ~/dot-oh-my-posh.ps1" -ForegroundColor White
-        Write-Host "" -ForegroundColor White
-        Write-Host "To find your profile location, run:" -ForegroundColor Yellow
-        Write-Host "  echo $PROFILE" -ForegroundColor White
-    }
-    catch {
-        Write-Host "Error installing script: $($_.Exception.Message)" -ForegroundColor Red
-    }
-}
-
 # Environment function
 function omp_env {
     $envInfo = Get-OMPEnvironment
@@ -557,7 +533,10 @@ Register-ArgumentCompleter -CommandName omp_set -ScriptBlock { _omp_completion $
 Register-ArgumentCompleter -CommandName omp_show -ScriptBlock { _omp_completion $args[0] $args[1] $args[2] }
 
 function omp_install {
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $scriptDir = Split-Path -Parent $PSCommandPath
+    if (-not $scriptDir) {
+        $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+    }
     $homeDir = $env:USERPROFILE
     if (-not $homeDir) {
         $homeDir = $env:HOME
@@ -569,22 +548,24 @@ function omp_install {
     $targetFile = Join-Path $homeDir ".oh-my-posh-tools.ps1"
     try {
         Copy-Item "$scriptDir\dot-oh-my-posh.ps1" $targetFile -Force
-        Write-Host "✓ PowerShell script installed to $targetFile" -ForegroundColor Green
+        Write-Host "Success: PowerShell script installed to $targetFile" -ForegroundColor Green
         Write-Host ""
         Write-Host "To use the tools, add this line to your PowerShell profile:" -ForegroundColor Yellow
         Write-Host ". ~/.oh-my-posh-tools.ps1" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "Or run this command to add it automatically:" -ForegroundColor Yellow
-        Write-Host "Add-Content `$PROFILE '. ~/.oh-my-posh-tools.ps1'" -ForegroundColor Cyan
+        Write-Host 'Add-Content $PROFILE ". ~/.oh-my-posh-tools.ps1"' -ForegroundColor Cyan
     }
     catch {
-        Write-Host "✗ Failed to install PowerShell script" -ForegroundColor Red
+        Write-Host "Error: Failed to install PowerShell script" -ForegroundColor Red
         return 1
     }
 }
 
 # Initialize oh-my-posh with default theme (only if no flags provided)
 if (-not $h -and -not $e -and -not $v) {
-    $initCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$DEFAULT_OMP_THEME.omp.json"
-    Invoke-Expression $initCmd
+    $themeFile = $DEFAULT_OMP_THEME
+    $themeFile += '.omp.json'
+    $fullPath = Join-Path $OMP_THEMES $themeFile
+    & oh-my-posh init pwsh --config $fullPath | Invoke-Expression
 }
