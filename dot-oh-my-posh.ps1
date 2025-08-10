@@ -18,7 +18,7 @@ if ($PSVersionTable.PSEdition -ne "Core" -or $PSVersionTable.PSVersion.Major -lt
 
 # Show version if -v flag is provided
 if ($v) {
-    Write-Host "Version: v01.12.01" -ForegroundColor Green
+    Write-Host "Version: v01.11.02" -ForegroundColor Green
     return
 }
 
@@ -170,7 +170,7 @@ if ($e) {
     Write-Host "oh-my-posh Install Dir: $($OMP_ENVIRONMENT.OMPInstallDir)" -ForegroundColor Yellow
     Write-Host "oh-my-posh Themes Dir: $($OMP_ENVIRONMENT.OMPThemesDir)" -ForegroundColor Yellow
     Write-Host "oh-my-posh Executable: $($OMP_ENVIRONMENT.OMPExecutable)" -ForegroundColor Yellow
-    Write-Host "xPackage Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
+    Write-Host "Package Manager: $($OMP_ENVIRONMENT.PackageManager)" -ForegroundColor Yellow
     Write-Host "===============================" -ForegroundColor Cyan
     return
 }
@@ -212,6 +212,10 @@ if (-not $OMP_THEMES) {
 }
 
 function omp_ls {
+    if (-not (Test-Path $OMP_THEMES)) {
+        Write-Host "Error: Themes directory not found: $OMP_THEMES" -ForegroundColor Red
+        return 1
+    }
     Get-ChildItem $OMP_THEMES -Name "*.omp.json" | ForEach-Object { $_.Replace(".omp.json", "") }
 }
 
@@ -237,9 +241,29 @@ function omp_set {
         return
     }
     
+    # Check if oh-my-posh command is available
+    if (-not (Get-Command oh-my-posh -ErrorAction SilentlyContinue)) {
+        Write-Host "Error: oh-my-posh command not found" -ForegroundColor Red
+        Write-Host "Please install oh-my-posh first" -ForegroundColor Yellow
+        return 1
+    }
+    
+    # Check if theme file exists
+    $themeFile = Join-Path $OMP_THEMES "$Theme.omp.json"
+    if (-not (Test-Path $themeFile)) {
+        Write-Host "Error: Theme '$Theme' not found at $themeFile" -ForegroundColor Red
+        Write-Host "Use 'omp_ls' to see available themes" -ForegroundColor Yellow
+        return 1
+    }
+    
     Write-Host "Setting theme to $Theme"
-    $themeCmd = oh-my-posh init pwsh --config "$OMP_THEMES/$Theme.omp.json"
-    Invoke-Expression $themeCmd
+    try {
+        $themeCmd = oh-my-posh init pwsh --config "`"$themeFile`""
+        Invoke-Expression $themeCmd
+    } catch {
+        Write-Host "Error: Failed to initialize theme '$Theme': $($_.Exception.Message)" -ForegroundColor Red
+        return 1
+    }
 }
 
 function omp_show {
@@ -248,9 +272,29 @@ function omp_show {
         [string]$StartTheme
     )
     
+    # Check if oh-my-posh command is available
+    if (-not (Get-Command oh-my-posh -ErrorAction SilentlyContinue)) {
+        Write-Host "Error: oh-my-posh command not found" -ForegroundColor Red
+        Write-Host "Please install oh-my-posh first" -ForegroundColor Yellow
+        return 1
+    }
+    
+    # Check if themes directory exists
+    if (-not (Test-Path $OMP_THEMES)) {
+        Write-Host "Error: Themes directory not found: $OMP_THEMES" -ForegroundColor Red
+        return 1
+    }
+    
     # Get a list of all theme files
     $themes = @(Get-ChildItem $OMP_THEMES -Name "*.omp.json" | ForEach-Object { $_.Replace(".omp.json", "") })
     $numThemes = $themes.Count
+    
+    # Check if any themes were found
+    if ($numThemes -eq 0) {
+        Write-Host "Error: No theme files found in $OMP_THEMES" -ForegroundColor Red
+        return 1
+    }
+    
     $currentIndex = 0
 
     # Get the current theme name from the POSH_THEME env var
@@ -280,14 +324,13 @@ function omp_show {
     }
 
     # Store original theme to restore on quit
-    $originalConfig = oh-my-posh export config
     $originalThemeName = ""
     if ($env:POSH_THEME) {
         $originalThemeName = [System.IO.Path]::GetFileNameWithoutExtension([System.IO.Path]::GetFileNameWithoutExtension($env:POSH_THEME))
     }
 
     # Function to display the current theme
-    function Display-Theme {
+    function Show-Theme {
         Clear-Host
         $themeFile = "$OMP_THEMES/$($themes[$currentIndex]).omp.json"
         $themeName = $themes[$currentIndex]
@@ -318,7 +361,19 @@ function omp_show {
         Write-Host " "
 
         # Print the rendered prompt
-        oh-my-posh print primary --config $themeFile
+        $themeFile = Join-Path $OMP_THEMES "$($themes[$currentIndex]).omp.json"
+        Write-Host "Theme preview:" -ForegroundColor Green
+        Write-Host "File: $themeFile" -ForegroundColor DarkGray
+        try {
+            $promptPreview = & oh-my-posh print primary --config $themeFile
+            if ($promptPreview) {
+                Write-Host $promptPreview
+            } else {
+                Write-Host "(No preview available for this theme)" -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Host "Error generating prompt preview: $($_.Exception.Message)" -ForegroundColor Red
+        }
        
         # Print the instructions
         Write-Host "echo hello world"
@@ -329,7 +384,7 @@ function omp_show {
 
     # Main loop to handle keypresses
     while ($true) {
-        Display-Theme
+        Show-Theme
         
         # Read a single keypress
         $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
@@ -547,7 +602,8 @@ function omp_install {
     # Copy the PowerShell script to home directory
     $targetFile = Join-Path $homeDir ".oh-my-posh-tools.ps1"
     try {
-        Copy-Item "$scriptDir\dot-oh-my-posh.ps1" $targetFile -Force
+        $sourceFile = Join-Path $scriptDir "dot-oh-my-posh.ps1"
+        Copy-Item $sourceFile $targetFile -Force
         Write-Host "Success: PowerShell script installed to $targetFile" -ForegroundColor Green
         Write-Host ""
         Write-Host "To use the tools, add this line to your PowerShell profile:" -ForegroundColor Yellow
@@ -564,8 +620,19 @@ function omp_install {
 
 # Initialize oh-my-posh with default theme (only if no flags provided)
 if (-not $h -and -not $e -and -not $v) {
-    $themeFile = $DEFAULT_OMP_THEME
-    $themeFile += '.omp.json'
-    $fullPath = Join-Path $OMP_THEMES $themeFile
-    & oh-my-posh init pwsh --config $fullPath | Invoke-Expression
+    if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+        $themeFile = $DEFAULT_OMP_THEME + '.omp.json'
+        $fullPath = Join-Path $OMP_THEMES $themeFile
+        if (Test-Path $fullPath) {
+            try {
+                & oh-my-posh init pwsh --config "`"$fullPath`"" | Invoke-Expression
+            } catch {
+                Write-Host "Warning: Failed to initialize oh-my-posh theme: $($_.Exception.Message)" -ForegroundColor Yellow
+            }
+        } else {
+            Write-Host "Warning: Default theme '$DEFAULT_OMP_THEME' not found at $fullPath" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "Warning: oh-my-posh command not found. Please install oh-my-posh to use themes." -ForegroundColor Yellow
+    }
 }
