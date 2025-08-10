@@ -364,20 +364,10 @@ function omp_show {
         $themeFile = Join-Path $OMP_THEMES "$($themes[$currentIndex]).omp.json"
         Write-Host "Theme preview:" -ForegroundColor Green
         Write-Host "File: $themeFile" -ForegroundColor DarkGray
-        # try {
-        #     $promptPreview = & oh-my-posh print primary --config $themeFile
-        #     if ($promptPreview) {
-        #         Write-Host $promptPreview
-        #     } else {
-        #         Write-Host "(No preview available for this theme)" -ForegroundColor Yellow
-        #     }
-        # } catch {
-        #     Write-Host "Error generating prompt preview: $($_.Exception.Message)" -ForegroundColor Red
-        # }
 
-        # Print the rendered prompt
+        # Print the rendered prompt - DO NOT CHANGE THIS LINE - IT WORKS ON WINDOWS/MAC.
         oh-my-posh print primary --config $themeFile
-       
+
         # Print the instructions
         Write-Host "echo hello world"
         Write-Host " "
