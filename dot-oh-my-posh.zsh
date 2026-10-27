@@ -382,10 +382,10 @@ omp_env() {
 
 # Help function (moved earlier)
 
-# Main omp function that acts as a wrapper for all individual functions
-omp() {
+# Main omptool function that acts as a wrapper for all individual functions
+omptool() {
     if [[ -z "$1" ]]; then
-        echo "Usage: omp <command> [args...]"
+        echo "Usage: omptool <command> [args...]"
         echo ""
         echo "Available commands:"
         echo "  ls       List available themes"
@@ -396,12 +396,12 @@ omp() {
         echo "  install  Install script to home directory"
         echo ""
         echo "Examples:"
-        echo "  omp ls                     # List themes"
-        echo "  omp set nu4a               # Set theme to nu4a"
-        echo "  omp show                   # Interactive theme browser"
-        echo "  omp help                   # Show help"
-        echo "  omp env                    # Show environment info"
-        echo "  omp install                # Install script permanently"
+        echo "  omptool ls                     # List themes"
+        echo "  omptool set nu4a               # Set theme to nu4a"
+        echo "  omptool show                   # Interactive theme browser"
+        echo "  omptool help                   # Show help"
+        echo "  omptool env                    # Show environment info"
+        echo "  omptool install                # Install script permanently"
         return 1
     fi
     
@@ -429,7 +429,7 @@ omp() {
             ;;
         *)
             echo "Unknown command: $command"
-            echo "Use 'omp help' for available commands"
+            echo "Use 'omptool help' for available commands"
             return 1
             ;;
     esac
